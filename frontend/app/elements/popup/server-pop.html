@@ -1,0 +1,217 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="server-pop">
+    <template>
+        <style include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 800px;
+                height: 800px;
+                margin: 0px;
+                background-color: black;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            }
+
+            span {
+                font-size: 8;
+            }
+
+            .content {
+                padding: 10px;
+                height: calc(100%);
+                background-color: white;
+            }
+
+            nagi-divider {
+                --nagi-divider-color: black;
+                --nagi-divider-height: 1px;
+                --nagi-divider-opacity: 0.2;
+            }
+
+            #map {
+                width: 100%;
+                height: 400px;
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="popup-toolbar">
+                <label class="popup-title">{{title}}</label>
+                <span class="space"></span>
+                <paper-icon-button id="refresh_btn" icon="refresh" on-click="loadData" class="popup-icon-button"></paper-icon-button>
+                <paper-icon-button icon="close" dialog-dismiss class="popup-icon-button"></paper-icon-button>
+            </paper-toolbar>
+            <div class="popup-main">
+                <div class="layout vertical content">
+                    <form class="ui form">
+                        <h5 class="ui dividing header">기본 정보</h5>
+                        <div class="three fields">
+                            <div class="field required">
+                                <label>ID</label>
+                                <input type="text" id="f_id"> </div>
+                            <div class="field">
+                                <label>이름</label>
+                                <input type="text" id="f_name" readonly> </div>
+                            <div class="field required">
+                                <label>Email</label>
+                                <input type="text" id="f_email"> </div>
+                        </div>
+                        <h5 class="ui dividing header">비밀번호</h5>
+                        <div class="three fields">
+                            <div class="field">
+                                <label>기존 비밀번호</label>
+                                <input type="password"> </div>
+                            <div class="field">
+                                <label>새로운 비밀번호</label>
+                                <input type="password"> </div>
+                            <div class="field">
+                                <label>비밀번호 확인</label>
+                                <input type="password"> </div>
+                        </div>
+                        <h5 class="ui dividing header">위치</h5>
+                        <div id="map"></div>
+                    </form>
+                </div>
+                <div class="popup-footer">
+                    <paper-button on-click="save" class="invert" noink>저장</paper-button>
+                    <paper-button dialog-dismiss class="invert" noink>취소</paper-button>
+                </div>
+        </paper-header-panel>
+    </template>
+</dom-module>
+<script>
+    (function() {
+        Polymer({
+            is: 'server-pop',
+            properties: {
+                width: {
+                    type: Number,
+                    value: 200,
+                    notify: true
+                },
+                height: {
+                    type: Number,
+                    value: 200,
+                    notify: true
+                }
+            },
+            behaviors: [
+                Polymer.PaperDialogBehavior
+            ],
+            ready() {
+                log.info("ready");
+                this.title = "서버 추가"
+                this.addEventListener('iron-overlay-opened', function() {
+                    log.info("헉");
+                    //this.backdropElement.style.zIndex = Number(this.style.zIndex) - 1;
+                });
+                //this.autoFitOnAttach = true;
+                this.info = {
+                    id: "서울지부",
+                    name: "서울지부"
+                };
+                //app.view.defaultPopup(this);
+                var me = this;
+                this.setAttribute("id", this.localName);
+                /*
+                this.addEventListener("iron-overlay-closed", function(e) {
+                	app.view.removePop(this);
+                });
+                */
+            },
+            attached() {
+                log.info("attached");
+                this.open();
+                this.async(this.init, 500);
+            },
+            detached() {},
+            init() {
+                log.info("init");
+                this.$.map.style.opacity = 0;
+                this.createMap();
+                this.initMap();
+                //this.loadData();
+                TweenMax.to(this.$.map, 0.5, {
+                    opacity: 1,
+                    delay: 0,
+                    onComplete() {
+                        //me.removeElement($element);
+                    }
+                });
+            },
+            createMap() {
+                var container = this.$.map; //지도를 담을 영역의 DOM 레퍼런스
+                var options = { //지도를 생성할 때 필요한 기본 옵션
+                    center: new daum.maps.LatLng(33.449866588094956, 126.56671811438332), //지도의 중심좌표.
+                    level: 3 //지도의 레벨(확대, 축소 정도)
+                };
+                this.map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
+            },
+            initMap() {
+                this.server_data = [{
+                    "Name": "서울",
+                    "Age": 25,
+                    "Country": 1,
+                    "Address": "Ap #897-1459 Quam Avenue",
+                    "Married": false,
+                    "x": 33.449866588094956,
+                    "y": 126.56671811438332
+                }, {
+                    "Name": "부산",
+                    "Age": 45,
+                    "Country": 2,
+                    "Address": "Ap #370-4647 Dis Av.",
+                    "Married": true,
+                    "x": 33.440091488043194,
+                    "y": 126.53632180011213
+                }, {
+                    "Name": "광주",
+                    "Age": 29,
+                    "Country": 3,
+                    "Address": "Ap #365-8835 Integer St.",
+                    "Married": false,
+                    "x": 33.38519841297833,
+                    "y": 126.29127497279947
+                }, {
+                    "Name": "대전",
+                    "Age": 56,
+                    "Country": 1,
+                    "Address": "911-5143 Luctus Ave",
+                    "Married": true,
+                    "x": 37.54699,
+                    "y": 127.09598
+                }];
+                _.each(this.server_data, (item) => {
+                    if(item.x) {
+                        var markerPosition = new daum.maps.LatLng(item.x, item.y);
+                        log.info("헉ㄹ");
+                        var marker = new daum.maps.Marker({
+                            position: markerPosition,
+                            title: item.Name,
+                            //image: markerImage, // 마커이미지 설정 
+                            map: this.map,
+                            clickable: true
+                        });
+                        (function(map, marker) {
+                            daum.maps.event.addListener(marker, 'click', () => {
+                                console.log(marker.getPosition());
+                                map.setLevel(4);
+                                map.setCenter(marker.getPosition());
+                            });
+                        })(this.map, marker);
+                    }
+                });
+            },
+            loadData() {
+                var me = this;
+                var param = {
+                    id: this.user_id
+                }
+                axios.post('getUserInfo', param).then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                this.info = $data;
+                this.open();
+            }
+        });
+    })();
+</script>

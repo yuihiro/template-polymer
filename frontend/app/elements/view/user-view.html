@@ -20,12 +20,10 @@
 						</div>
 					</paper-fab-speed-dial> -->
                     <!--<paper-icon-button src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEyOCAxMjg7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMjggMTI4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiM0RDRENEQ7fQoJLnN0MXtmaWxsOiNGRkZGRkY7fQo8L3N0eWxlPjxjaXJjbGUgY2xhc3M9InN0MCIgY3g9IjY0IiBjeT0iNjQiIHI9IjY0Ii8+PGc+PHBhdGggY2xhc3M9InN0MSIgZD0iTTg3LjQsNTAuNWw5LjktOS45YzAuNC0wLjQsMC40LTEsMC0xLjRsLTguNS04LjVjLTAuNC0wLjQtMS0wLjQtMS40LDBsLTkuOSw5LjlMODcuNCw1MC41eiIvPjxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik03NC42LDQzLjVMMzgsODAuMWwtNC40LDEzYy0wLjMsMC44LDAuNSwxLjUsMS4zLDEuM2wxMy00LjRsMzYuNi0zNi42TDc0LjYsNDMuNXoiLz48L2c+PC9zdmc+" class="hint--bottom hint--no-animate" aria-label="추가" noink></paper-icon-button>-->
-                    <paper-icon-button icon="icons:add-circle" on-click="popupUserInfo" class="hint--bottom hint--no-animate" aria-label="추가" noink></paper-icon-button>
+                    <paper-icon-button icon="icons:add-circle" on-click="popupServerInfo" class="hint--bottom hint--no-animate" aria-label="추가" noink></paper-icon-button>
                     <span style="width:5px"></span>
                     <paper-icon-button icon="icons:remove-circle" on-click="deleteUser" class="hint--bottom hint--no-animate" aria-label="삭제" noink></paper-icon-button>
                     <span style="width:5px"></span>
-                    <paper-button noink on-click="popupUserInfo">사용자구분 설정</paper-button>
-                    <paper-button noink on-click="popupUserApproveList">승인대기 목록</paper-button>
                 </div>
             </paper-toolbar>
             <div class="view-main">
@@ -179,6 +177,10 @@
                         return false;
                     }
                 });
+            },
+            popupServerInfo() {
+                var popup = app.view.createPopup("server-pop");
+                log.info(popup);
             },
             popupUserInfo($id) {
                 if(_.isString($id) == false) {

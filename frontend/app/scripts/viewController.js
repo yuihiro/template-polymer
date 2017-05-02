@@ -92,6 +92,7 @@ class ViewController {
         //popup.canceled = true;
         popup.noCancelOnOutsideClick = true;
         popup.noCancelOnEscKey = false;
+        //popup.autoFitOnAttach = true
     }
     /*
     	    loadElement($element_file, $element_id, $parent_node) {

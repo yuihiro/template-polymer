@@ -26,6 +26,10 @@
 
     function loadComplete() {
         console.log('loadComplete');
+        // window.Polymer = {
+        //     dom: 'shady',
+        //     lazyRegister: false
+        // };
         createApp();
     }
 

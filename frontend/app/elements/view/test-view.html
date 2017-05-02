@@ -1,0 +1,83 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="test-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                background-color: white !important;
+            }
+        </style>
+        <paper-icon-button icon="icons:add-circle" on-click="popupServerInfo" class="hint--bottom hint--no-animate" aria-label="추가" noink></paper-icon-button>
+        <div id="map" style="width:100%;height:100%"></div>
+        <!--<google-map id="map" latitude="33.450701" longitude="126.570667" api-key="AIzaSyBS6vKl2IW5qKuKsUHaMHLcCZuN2DLiTfA" style="width:500px;height:500px">-->
+        <!--<template is="dom-repeat" items="{{server_data}}">
+                <google-map-marker latitude$="{{item.x}}" longitude$="{{item.y}}" draggable$="false" title$="{{item.Name}}" google-map-marker-click$="marker_click"></google-map-marker>
+            </template>-->
+        </google-map>
+    </template>
+    <script>
+        Polymer({
+            is: 'test-view',
+            ready() {
+                this.server_data = [{
+                    "Name": "서울",
+                    "Address": "Ap #897-1459 Quam Avenue",
+                    "x": 33.449866588094956,
+                    "y": 126.56671811438332
+                }, {
+                    "Name": "부산",
+                    "Address": "Ap #370-4647 Dis Av.",
+                    "x": 33.440091488043194,
+                    "y": 126.53632180011213
+                }, {
+                    "Name": "광주",
+                    "Address": "Ap #365-8835 Integer St.",
+                    "x": 33.38519841297833,
+                    "y": 126.29127497279947
+                }, {
+                    "Name": "대전",
+                    "Address": "911-5143 Luctus Ave",
+                    "x": 37.54699,
+                    "y": 127.09598
+                }];
+                //this.initMap();
+                //this.$.map.fitToMarkers = true;
+            },
+            attached() {
+                this.async(this.init, 300);
+            },
+            init() {
+                var container = this.$.map; //지도를 담을 영역의 DOM 레퍼런스
+                var options = { //지도를 생성할 때 필요한 기본 옵션
+                    center: new daum.maps.LatLng(33.449866588094956, 126.56671811438332), //지도의 중심좌표.
+                    level: 3 //지도의 레벨(확대, 축소 정도)
+                };
+                this.map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
+                _.each(this.server_data, (item) => {
+                    if(item.x) {
+                        var markerPosition = new daum.maps.LatLng(item.x, item.y);
+                        var marker = new daum.maps.Marker({
+                            position: markerPosition,
+                            title: item.Name,
+                            //image: markerImage, // 마커이미지 설정 
+                            map: this.map,
+                            clickable: true
+                        });
+                        (function(map, marker) {
+                            daum.maps.event.addListener(marker, 'click', () => {
+                                console.log(marker.getPosition());
+                                map.setLevel(4);
+                                map.setCenter(marker.getPosition());
+                            });
+                        })(this.map, marker);
+                    }
+                });
+            },
+            marker_click(e) {
+                log.info(e);
+            },
+            popupServerInfo() {
+                var popup = app.view.createPopup("server-pop");
+            }
+        });
+    </script>
+</dom-module>
