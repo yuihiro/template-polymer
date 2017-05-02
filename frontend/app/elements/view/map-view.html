@@ -1,0 +1,259 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="map-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+            .canvas_wrap {
+                background-color: blue;
+            }
+
+            div.summary {
+                width: 300px;
+                background-color: black;
+            }
+
+            div.view-main {
+                background-color: yellow !important;
+            }
+
+            canvas {
+                background-color: red !important;
+            }
+
+            .marker:hover {
+                background-color: blue;
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <label>[[subTitle]]</label>
+                <span class="divider">/</span>
+                <label class="view-title">[[title]]</label>
+                <span class="flex"></span>
+                <div class="view-toolbar-content">
+                    <paper-icon-button icon="icons:save" id="btn" on-click="save" class="hint--left hint--no-animate big" aria-label="저장"></paper-icon-button>
+                    <span style="width:5px"></span>
+                </div>
+            </paper-toolbar>
+            <div class="view-main">
+                <div class="layout vertical summary">
+                    <paper-header-panel class="flex">
+                        <paper-toolbar>
+                            <span>AP목록</span>
+                        </paper-toolbar>
+                        <div class="flex">
+                            <vaadin-grid id='ap_grid' class='themed'>
+                                <table>
+                                    <colgroup>
+                                        <col name='id'>
+                                        <col name='name'>
+                                        <col name='type_str'>
+                                        <col name='email'> </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>이름</th>
+                                            <th>권한</th>
+                                            <th>EMAIL</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </vaadin-grid>
+                        </div>
+                    </paper-header-panel>
+                    <paper-header-panel class="flex">
+                        <paper-toolbar>
+                            <span>센서목록</span>
+                        </paper-toolbar>
+                        <div class="flex">
+                            <vaadin-grid id='ap_grid' class='themed'>
+                                <table>
+                                    <colgroup>
+                                        <col name='id'>
+                                        <col name='name'>
+                                        <col name='type_str'>
+                                        <col name='email'> </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>이름</th>
+                                            <th>권한</th>
+                                            <th>EMAIL</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </vaadin-grid>
+                        </div>
+                    </paper-header-panel>
+                </div>
+                <div class="flex canvas_wrap" id="test"> </div>
+            </div>
+        </paper-header-panel>
+    </template>
+    <script>
+        var Marker = function() {
+            this.Sprite = new Image();
+            this.Sprite.src = "http://www.clker.com/cliparts/w/O/e/P/x/i/map-marker-hi.png "
+            this.Width = 12;
+            this.Height = 20;
+            this.XPos = 0;
+            this.YPos = 0;
+        }
+        Polymer({
+            is: 'map-view',
+            ready() {
+                this.map_data = [{}];
+                this.ap_data = [];
+                this.sensor_data = [];
+                this.current_map_info = {};
+                this.stage = null;
+            },
+            attached() {
+                //this.loadData();
+                this.initCanvas();
+                this.createImage('http://placehold.it/1920x1200');
+                //this.parseData(this.map_data);
+            },
+            dettached() {
+                this.stage.destroyChildren()
+                this.stage.destroy();
+            },
+            initCanvas() {
+                this.stage = new Konva.Stage({
+                    container: 'test',
+                    width: this.$.test.offsetWidth,
+                    height: this.$.test.offsetHeight
+                });
+                log.info(this.stage.getWidth() + "/" + this.stage.getHeight());
+            },
+            createMarker() {
+                var layer = new Konva.Layer();
+                for(var n = 0; n < 30; n++) {
+                    var item = this.drawMarker(this.stage);
+                    layer.add(item);
+                }
+                this.stage.add(layer);
+            },
+            drawMarker(stage) {
+                var scale = Math.random() + 10;
+                var shape = new Konva.Circle({
+                    x: Math.random() * stage.getWidth(),
+                    y: Math.random() * stage.getHeight(),
+                    radius: scale,
+                    fill: 'red',
+                    stroke: 'black',
+                    strokeWidth: 4
+                });
+                shape.addEventListener('mouseover', (e) => {
+                    shape.strokeWidth(8);
+                    shape.getLayer().draw();
+                });
+                shape.addEventListener('mouseout', (e) => {
+                    shape.strokeWidth(4);
+                    shape.getLayer().draw();
+                });
+                return shape;
+            },
+            createImage(url) {
+                log.info("createImage");
+                var me = this;
+                async.waterfall([
+                    function(callback) {
+                        log.info("loadImage");
+                        var img = new Image();
+                        img.onload = (e) => {
+                            callback(null, img);
+                        }
+                        img.src = url;
+                    },
+                    function(data, callback) {
+                        me.drawImage(data);
+                        callback(null);
+                    }
+                ], function(err, result) {
+                    log.info("createImage_complate");
+                    if(err) console.log(err);
+                    me.createMarker();
+                });
+            },
+            drawImage(img) {
+                log.info("drawImage");
+                var size = this.resizeKeepingRatio(img.naturalWidth, img.naturalHeight, this.stage.getWidth(), this.stage.getHeight());
+                var yoda = new Konva.Image({
+                    x: 0,
+                    y: 0,
+                    image: img,
+                    width: size.width,
+                    height: size.height
+                });
+                var layer = new Konva.Layer();
+                layer.add(yoda);
+                this.stage.add(layer);
+            },
+            loadData() {
+                var me = this;
+                axios.get('maps').then(function(response) {
+                    me.parseData(response.data);
+                    log.info("지도데이터완료");
+                });
+            },
+            parseData($data) {
+                this.current_map_info = $data[0];
+                log.info(this.current_map_info);
+                //this.$.map_image.src = "data:image/png;base64, " + this.current_map_info.image_byte;
+                this.map_data = $data;
+                this.marker_data = [];
+            },
+            resizeKeepingRatio(width, height, destWidth, destHeight) {
+                if(!width || !height || width <= 0 || height <= 0) {
+                    throw "Params error";
+                }
+                var ratioW = width / destWidth;
+                var ratioH = height / destHeight;
+                if(ratioW <= 1 && ratioH <= 1) {
+                    var ratio = 1 / ((ratioW > ratioH) ? ratioW : ratioH);
+                    width *= ratio;
+                    height *= ratio;
+                } else if(ratioW > 1 && ratioH <= 1) {
+                    var ratio = 1 / ratioW;
+                    width *= ratio;
+                    height *= ratio;
+                } else if(ratioW <= 1 && ratioH > 1) {
+                    var ratio = 1 / ratioH;
+                    width *= ratio;
+                    height *= ratio;
+                } else if(ratioW >= 1 && ratioH >= 1) {
+                    var ratio = 1 / ((ratioW > ratioH) ? ratioW : ratioH);
+                    width *= ratio;
+                    height *= ratio;
+                }
+                return {
+                    width: width,
+                    height: height,
+                    ratio: ratio
+                };
+            },
+            // drawMarker() {
+            //     for(var i = 0; i < this.marker_data.length; i++) {
+            //         var tempMarker = this.marker_data[i];
+            //         // Draw marker
+            //         this.context.drawImage(tempMarker.Sprite, tempMarker.XPos, tempMarker.YPos, tempMarker.Width, tempMarker.Height);
+            //         // Calculate position text
+            //         var markerText = "Postion (X: " + tempMarker.XPos + ", Y: " + tempMarker.YPos;
+            //         // Draw a simple box so you can see the position
+            //         var textMeasurements = this.context.measureText(markerText);
+            //         this.context.fillStyle = "#666 ";
+            //         this.context.globalAlpha = 0.7;
+            //         this.context.fillRect(tempMarker.XPos - (textMeasurements.width / 2), tempMarker.YPos - 15, textMeasurements.width, 20);
+            //         this.context.globalAlpha = 1;
+            //         // Draw position above
+            //         this.context.fillStyle = "#000 ";
+            //         this.context.fillText(markerText, tempMarker.XPos, tempMarker.YPos);
+            //     }
+            // },
+            // Add mouse click event listener to canvas
+            popupMapInfo() {}
+        });
+    </script>
+</dom-module>

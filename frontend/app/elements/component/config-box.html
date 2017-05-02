@@ -1,0 +1,107 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="config-box">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                @apply --layout-vertical;
+                /*outline: solid;
+				outline-width: 1px;
+				outline-color: gray;*/
+                background-color: white;
+            }
+
+            .main ::content>div {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+            }
+
+            .header {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                background-color: #f3f3f3;
+                height: 40px;
+                padding-left: 10px;
+                /*box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 0, 0, 0.1);*/
+            }
+
+            .main {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                padding-left: 10px;
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+
+             ::content {
+                color: black;
+                font-size: 13px;
+            }
+
+            label.title {
+                font-size: 14px;
+                font-weight: 600;
+            }
+
+            label.sub-title {
+                font-size: 10px;
+                vertical-align: bottom;
+                color: #585757;
+                padding-left: 4px;
+                padding-top: 4px;
+            }
+
+            paper-button {
+                width: 70px;
+                height: 25px;
+            }
+
+            paper-icon-button {
+                color: #106cc8;
+            }
+
+            paper-icon-button ::shadow #ink {
+                display: none;
+            }
+        </style>
+        <nagi-divider style="height:1px"></nagi-divider>
+        <div class="header">
+            <label class="title">{{title}}</label>
+            <label class="sub-title">{{subTitle}}</label>
+            <span class="space"></span>
+            <!--
+				<paper-icon-button icon="icons:settings" id="btn" on-click="save" data-tooltip="save" data-position="bottom left"></paper-icon-button>
+			-->
+            <!-- <paper-button id="btn" on-click="save" noink>
+					<iron-icon icon="icons:settings"></iron-icon>
+				</paper-button> -->
+        </div>
+        <nagi-divider style="height:1px"></nagi-divider>
+        <div class="main">
+            <content> </content>
+        </div>
+        <!--
+				<template is="dom-if" if="{{checkIndex(data.idx, 2)}}">
+					<paper-checkbox checked>접근IP제한</paper-checkbox>
+				</template>
+			--></template>
+    <script>
+        Polymer({
+            is: 'config-box',
+            properties: {
+                title: {
+                    type: String
+                }
+            },
+            listeners: {
+                "click": 'setFocus'
+            },
+            setFocus() {},
+            ready() {},
+            attached() {},
+            init() {},
+            save() {
+                this.fire("save", this.title);
+            }
+        });
+    </script>
+    </polymer-element>

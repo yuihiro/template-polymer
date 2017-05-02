@@ -1,0 +1,11 @@
+build/
+node_modules/
+dist/
+bower_components/
+components/
+.tmp
+./idea
+.publish/
+.gradle/
+.history/
+.vscode/chrome/

@@ -1,0 +1,134 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="dom-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                background-color: white !important;
+            }
+
+            #chart svg {
+                height: 100%;
+            }
+
+            .card {
+                background-color: gray;
+            }
+
+            div {
+                background-color: white;
+            }
+
+            nagi-tree {
+                width: 300px;
+                height: 200px;
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <iron-icon icon="image:camera-roll"></iron-icon>
+                <label class="view-title">테스트</label>
+                <span class="flex"></span>
+                <div> </div>
+            </paper-toolbar>
+            <div class="layout vertical flex view-main">
+                <div class="card" id="container">
+                    <template is="dom-repeat" id="employeeList" items="{{employees}}">
+                        <div class="layout horizontal flex">
+                            <span>{{item.first}}</span>
+                            <span>{{item.last}}</span>
+                            <span>{{index}}</span>
+                            <button on-click="toggleSelection">Select</button>
+                            <select id="color" title="select color" on-change="change">
+                                <option selected="selected">color</option>
+                                <option>red</option>
+                                <option>blue</option>
+                                <option>yellow</option>
+                                <option>black</option>
+                            </select>
+                        </div>
+                    </template>
+                </div>
+                <upload-box style="width:200px"></upload-box>
+                <div id="chart"> <svg></svg> </div>
+                <nagi-tree id="tree" data$="{{tree_data}}" on-select="selectTree"> </nagi-tree>
+                <button id="btn" on-click="save">선택</button>
+            </div>
+        </paper-header-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'dom-view',
+            properties: {
+                user: {
+                    type: String,
+                    value: '디폴트'
+                }
+            },
+            ready() {
+                this.employees = [{
+                    first: 'Bob',
+                    last: 'Smith'
+                }, {
+                    first: 'Sally',
+                    last: 'Johnson'
+                }];
+                this.param = {
+                    "alt": "json",
+                    "q": "chrome"
+                };
+                this.tree_data = DataUtil.mapToTreeData(app.data.dept_lst);
+            },
+            attached() {
+                //this.test();
+            },
+            toggleSelection(e) {
+                var item = this.$.employeeList.itemForElement(e.target);
+                var model = e.model;
+                model.set("item.last", "이럴수가");
+                log.info(item.first);
+            },
+            change(e) {
+                var select_name = $(e.target).children("option:selected").text();
+                $(e.target).siblings("label").text(select_name);
+            },
+            test() {
+                var sin = [],
+                    cos = [];
+                for(var i = 0; i < 100; i++) {
+                    sin.push({
+                        x: i,
+                        y: Math.sin(i / 10)
+                    });
+                    cos.push({
+                        x: i,
+                        y: .5 * Math.cos(i / 10)
+                    });
+                }
+                var data = [{
+                    values: sin,
+                    key: 'Sine Wave',
+                    color: '#ff7f0e'
+                }, {
+                    values: cos,
+                    key: 'Cosine Wave',
+                    color: '#2ca02c'
+                }];
+                var chart = nv.models.lineChart().useInteractiveGuideline(true);
+                chart.xAxis.axisLabel('Time (ms)').tickFormat(d3.format(',r'));
+                chart.yAxis.axisLabel('Voltage (v)').tickFormat(d3.format('.02f'));
+                d3.select('#chart svg').datum(data).transition().duration(500).call(chart);
+                //nv.utils.windowResize(chart.update);
+                return chart;
+            },
+            selectTree(e) {
+                log.info(event.detail);
+            },
+            save() {
+                log.info(this.$.tree.getCheckData());
+                log.info(this.$.tree.getData());
+                //this.$.tree.addNode();
+                this.$.tree.reload();
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,406 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<dom-module id="shared-styles">
+    <template>
+        <style>
+            * {
+                /*--paper-toolbar-background: #00bcd4;*/
+            }
+            /* VIEW */
+
+            paper-toolbar.view-toolbar {
+                --paper-toolbar-background: #106cc8;
+                --paper-toolbar-height: 55px;
+                z-index: 99;
+                padding-left: 0px;
+                /*box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 0, 0, 0.1);*/
+            }
+
+            .view-toolbar-content {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+            }
+
+            label.view-title {
+                font-size: 18px !important;
+                font-weight: bold;
+                color: white;
+            }
+
+            div.view-main {
+                @apply --layout-horizontal;
+                width: 100%;
+                height: calc(100% - 55px);
+                background-color: white !important;
+            }
+
+            nagi-panel.search_container {
+                width: 180px;
+            }
+
+            paper-header-panel {
+                width: 100%;
+                height: 100%;
+                background-color: white !important;
+            }
+            /* ELEMENT */
+
+            label {
+                color: var(--main-text-color);
+            }
+
+            .space {
+                @apply --layout-flex;
+            }
+
+            .v-space {
+                @apply --layout-flex;
+                @apply --layout-vertical;
+            }
+            /* POPUP */
+
+            .popup-main {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            .popup-footer {
+                @apply --layout-horizontal;
+                @apply --layout-end-justified;
+                @apply --layout-center;
+                padding: 0px;
+                background-color: white;
+                border-top: #dedede 1px solid;
+                height: 40px;
+            }
+
+            paper-toolbar.popup-toolbar {
+                --paper-toolbar-background: #106cc8;
+                --paper-toolbar-height: 60px;
+                z-index: 99;
+                padding-left: 0px;
+                /*box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 0, 0, 0.1);*/
+            }
+
+            label.popup-title {
+                font-size: 16px !important;
+                font-weight: 600;
+                color: white;
+            }
+
+            paper-icon-button.popup-icon-button {
+                width: 25px;
+                height: 25px;
+            }
+            /* BUTTON */
+
+            paper-button {
+                background-color: transparent;
+                font-size: 12px;
+                height: 30px;
+                border: 1px rgba(255, 255, 255, 0.3) solid;
+                color: white;
+            }
+
+            paper-button:hover {
+                border: 1px rgba(255, 255, 255, 1) solid;
+            }
+
+            paper-button.invert {
+                color: black;
+                border: 1px rgba(0, 0, 0, 0.3) solid;
+            }
+
+            paper-button.invert:hover {
+                border: 1px rgba(0, 0, 0, 1) solid;
+            }
+
+            paper-button.grid-column-primary {
+                background-color: green;
+                color: white;
+                height: 20px;
+            }
+
+            paper-button>iron-icon {
+                padding-right: 5px;
+            }
+            /* ICON BUTTON */
+
+            paper-icon-button {
+                padding: 2px;
+                width: 25px;
+                height: 25px;
+                background-color: transparent;
+                color: white;
+                border: none;
+                --paper-icon-button-hover: {
+                    border: 1px rgba(255, 255, 255, 1) solid !important;
+                }
+            }
+
+            paper-icon-button.big {
+                width: 30px;
+                height: 30px;
+            }
+
+            paper-icon-button.invert {
+                color: black;
+                border: none;
+                --paper-icon-button-hover: {
+                    border: 1px rgba(0, 0, 0, 1) solid !important;
+                }
+            }
+
+            paper-icon-button[suffix] {
+                padding: 0px;
+                margin: 0px;
+                width: 20px;
+                height: 20px;
+            }
+
+            paper-icon-button[suffix] ::shadow #icon {
+                top: -3px !important;
+            }
+            /* CHART */
+
+            chart-box {
+                height: calc(100% - 60px);
+            }
+            /* BUTTON */
+            /* TOOLBAR */
+
+            paper-toolbar ::shadow .toolbar-tools {
+                padding-left: 10px;
+                padding-right: 5px;
+            }
+            /* ICON */
+
+            iron-icon {
+                /*padding-right: 5px;*/
+            }
+            /* INPUT */
+
+            paper-input {
+                --paper-input-container-input: {
+                    text-align: center;
+                    font-size: 13px;
+                }
+                ;
+                --paper-input-container: {}
+            }
+
+            paper-input[required] ::shadow label {
+                /*color: red !important;*/
+            }
+            /* CHECKBOX */
+
+            paper-checkbox {
+                --paper-checkbox-size: 18px;
+                --paper-checkbox-label-color: var(--main-text-color);
+                --paper-checkbox-label-spacing: 5px;
+                --paper-checkbox-checkmark-color: #106cc8;
+            }
+
+            paper-checkbox:hover ::shadow #checkbox {
+                border: 1px solid;
+                border-color: #85B7D9 !important;
+            }
+
+            paper-checkbox ::shadow #checkbox {
+                border: solid 1px #d4d4d5;
+            }
+
+            paper-checkbox[noLabel] ::shadow #checkboxLabel {
+                display: none;
+            }
+
+            paper-checkbox ::shadow #checkbox.checked {
+                background-color: transparent !important;
+                border: solid 1px #d4d4d5 !important;
+            }
+
+            paper-checkbox ::shadow #checkmark {
+                width: 25% !important;
+                height: 60% !important;
+                left: 1px;
+                top: 1px;
+                transition: opacity ease .28s;
+            }
+
+            paper-checkbox[checked] ::shadow #checkmark {
+                -webkit-animation: none !important;
+                animation: none !important;
+                transform: rotate(45deg);
+                opacity: 1;
+            }
+
+            paper-checkbox:not([checked]) ::shadow #checkmark {
+                -webkit-animation: none !important;
+                animation: none !important;
+                transform: rotate(45deg);
+                opacity: 0;
+                display: block !important;
+            }
+
+            paper-checkbox ::shadow #ink {
+                display: none;
+            }
+
+            paper-checkbox.invert ::shadow #checkboxLabel {
+                color: white;
+            }
+
+            paper-checkbox.invert {
+                --paper-checkbox-checkmark-color: white;
+            }
+            /* RADIOBUTTON */
+
+            paper-radio-group {
+                --paper-radio-group-item-padding: 5px;
+            }
+
+            paper-radio-button {
+                --paper-radio-button-checked-color: #106cc8;
+                --paper-radio-button-size: 18px;
+                --paper-radio-button-label-spacing: 5px;
+                --paper-radio-button-label-color: rgba(0, 0, 0, 0.8);
+            }
+
+            paper-radio-button ::shadow #onRadio {
+                border: solid 1px #d4d4d5 !important;
+            }
+
+            paper-radio-button ::shadow #offRadio {
+                border: solid 1px #d4d4d5 !important;
+            }
+
+            paper-radio-button ::shadow #ink {
+                display: none;
+            }
+
+            iron-pages {
+                background-color: white;
+            }
+            /* TAB */
+
+            paper-tabs {
+                background-color: #fafafa;
+                color: var(--main-text-color);
+                --paper-tabs-selection-bar-color: green;
+                border-bottom-width: 1px;
+                border-bottom-style: solid;
+                border-bottom-color: #dedede;
+            }
+
+            paper-tabs ::shadow * {
+                font-size: 14px;
+                font-weight: 600;
+            }
+
+            paper-tabs.pop-tabs {}
+
+            paper-tab {
+                --paper-tab-ink: green;
+                --paper-tabs-selection-bar-color: green;
+                --paper-ripple-color: green;
+            }
+
+            paper-tab.iron-selected {
+                color: black;
+            }
+            /* LIST */
+
+            iron-list ::shadow #items {
+                background-color: var(--paper-grey-200, #eee);
+            }
+
+            iron-list ::shadow #items ::content div {
+                font-size: 13px;
+                color: red;
+                height: 30px !important;
+            }
+            /* VAADIN GRID */
+
+            vaadin-grid {
+                --primary-color: black;
+                --vaadin-grid-row-height: 36px;
+                --vaadin-grid-header-row-height: 36px;
+                --vaadin-grid-footer-row-height: 36px;
+                z-index: 8 !important;
+                height: 100%;
+                font-size: 13px;
+                border: 1px solid #e3e3e3;
+                border: 1px solid #e3e3e3;
+                --vaadin-grid-header-row: {
+                    font-size: 30px;
+                }
+            }
+
+            vaadin-grid ::shadow .vaadin-grid-row:after {
+                display: none;
+            }
+
+            vaadin-grid ::shadow .vaadin-grid-row:hover td {
+                /*background-color: #eeeeee !important;*/
+            }
+
+            vaadin-grid ::shadow .vaadin-grid-row-selected td {
+                /*background-color: #eeeeee !important;*/
+            }
+
+            vaadin-grid ::shadow .vaadin-grid-header th {
+                font-weight: bold !important;
+                font-size: 15px !important;
+                text-align: center !important;
+            }
+
+            vaadin-grid ::shadow .vaadin-grid-header .vaadin-grid-column-header-content {
+                width: 100% !important;
+            }
+
+            vaadin-grid ::shadow .vaadin-grid-body td span {
+                text-align: center !important;
+                width: 100% !important;
+            }
+
+            vaadin-grid ::shadow .vaadin-grid-cell {
+                text-align: center !important;
+                padding-left: 5px !important;
+                padding-right: 5px !important;
+            }
+
+            vaadin-grid ::shadow .vaadin-grid-cell:not(:last-child) {
+                border-right: 1px solid #e3e3e3;
+            }
+            /* VAADIN COMBOBOX */
+
+            vaadin-combo-box {
+                /*--vaadin-combo-box-overlay-max-height: 20px;*/
+            }
+
+            vaadin-combo-box ::shadow #input {
+                text-align: center;
+                font-size: 13px;
+            }
+
+            vaadin-combo-box[opened][has-value] ::shadow #input {
+                margin-right: 0px !important;
+                padding-right: 28px !important;
+            }
+
+            vaadin-combo-box ::shadow paper-icon-button {
+                /*color: rgba(0, 0, 0, 1);
+				--paper-icon-button-ink-color: red !important;*/
+            }
+
+            vaadin-combo-box ::shadow .clear-button {
+                width: 15px !important;
+                height: 15px !important;
+                top: 2px !important;
+                right: 0px !important;
+                display: none !important;
+            }
+        </style>
+    </template>
+</dom-module>

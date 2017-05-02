@@ -1,0 +1,69 @@
+.select2-container, .select2-choice, .select2-results {
+    font-size: 13px;
+    text-align: center !important;
+}
+
+.select2-selection--single {
+    border: 1px solid;
+    border-color: #dedede !important;
+    border-radius: 4px;
+    height: 30px;
+    text-align: center !important;
+}
+
+.select2-selection--single:hover {
+    outline: none;
+    border-color: #85B7D9 !important;
+    color: var(--main-text-color);
+    box-shadow: none;
+}
+
+.select2-selection--single:focus {
+    outline: none;
+    border-color: #85B7D9 !important;
+    color: var(--main-text-color);
+    box-shadow: none;
+}
+
+.select2-results__option--highlighted[aria-selected] {
+    background: var(--app-primary-color) !important;
+    color: #ffffff;
+}
+
+
+/* paper theme */
+
+.select2-container--paper {}
+
+.select2-container--paper .select2-selection--single {
+    border: 1px rgba(255, 255, 255, 0.3) solid !important;
+    padding-top: 3px !important;
+    background-color: var(--app-primary-color) !important;
+    color: white !important;
+    height: 28px !important;
+}
+
+.select2-container--paper .select2-selection--single:hover {
+    border: 1px rgba(255, 255, 255, 1) solid !important;
+}
+
+.select2-container--paper .select2-selection--single .select2-selection__arrow {
+    height: 26px;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 20px;
+}
+
+.select2-container--paper .select2-selection--single .select2-selection__arrow b {
+    border-color: white transparent transparent transparent;
+    border-style: solid;
+    border-width: 5px 4px 0 4px;
+    height: 0;
+    left: 50%;
+    margin-left: -4px;
+    margin-top: -2px;
+    position: absolute;
+    top: 50%;
+    width: 0;
+}

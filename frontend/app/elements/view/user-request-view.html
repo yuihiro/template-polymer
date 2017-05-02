@@ -1,0 +1,173 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="user-request-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+            div.label-box {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                margin-bottom: 6px;
+            }
+
+            .label-box label {
+                font-weight: bold;
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <label>[[subTitle]]</label>
+                <span class="divider">/</span>
+                <label class="view-title">[[title]]</label>
+                <span class="flex"></span>
+                <div>
+                    <paper-button noink on-click="confirm">승인</paper-button>
+                    <paper-button noink on-click="reject">거부</paper-button>
+                </div>
+            </paper-toolbar>
+            <div class="view-main">
+                <nagi-panel title="검색" sub-title="SEARCH" class="search_container">
+                    <nagi-search-box id="search_box" on-search="refresh" class="module_main">
+                        <div class="field">
+                            <label>타입</label>
+                            <nagi-select id="type_cb" data$=[[type_data]]></nagi-select>
+                        </div>
+                        <div class="field">
+                            <label>ID/이름</label>
+                            <nagi-input id="id_txt"></nagi-input>
+                        </div>
+                        <div class="field">
+                            <div class="label-box">
+                                <label>등록시간</label>
+                                <span class="flex"></span>
+                                <paper-checkbox id="date_chk" on-change="date_change" noLabel></paper-checkbox>
+                            </div>
+                            <nagi-date-box id="date_box"></nagi-date-box>
+                        </div>
+                    </nagi-search-box>
+                </nagi-panel>
+                <nagi-divider align="v"></nagi-divider>
+                <nagi-grid-panel id="grid_panel" title="목록" sub-title="LIST" on-page=paging> </nagi-grid-panel>
+            </div>
+        </paper-header-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'user-request-view',
+            properties: {
+                title: {
+                    type: String
+                },
+                subTitle: {
+                    type: String
+                }
+            },
+            ready() {
+                this.user_data = [];
+                this.filter = '20';
+                this.type_data = DataUtil.addAllLabel(_.concat(app.data.user_request_type_lst));
+                this.grid_column_data = [{
+                    label: "타입",
+                    value: "type_label"
+                }, {
+                    label: "ID",
+                    value: "user_id"
+                }, {
+                    label: "이름",
+                    value: "name"
+                }, {
+                    label: "등록시간",
+                    value: "reg_time"
+                }];
+            },
+            attached() {
+                this.async(this.init, 300);
+            },
+            init() {
+                this.initGrid();
+                this.date_change();
+                this.refresh();
+            },
+            initGrid() {
+                this.$.grid_panel.init({
+                    'column': this.grid_column_data
+                });
+            },
+            refresh() {
+                this.loadDataCnt();
+            },
+            getSearchData() {
+                var result = {
+                    'type': this.$.type_cb.getValue(),
+                    'req_tbl.user_id|name': FormUtil.getLikeStr(this.$.id_txt.getValue())
+                };
+                result["order"] = "req_time desc";
+                result = _.assign(result, this.$.date_box.getValue());
+                result = _.assign(result, this.$.grid_panel.getPageValue());
+                return result;
+            },
+            loadDataCnt() {
+                var me = this;
+                var param = this.getSearchData();
+                axios.post('getUserRequestListCnt', param).then(function(response) {
+                    me.parseDataCnt(response.data);
+                });
+            },
+            parseDataCnt($data) {
+                this.$.grid_panel.initPaging($data);
+                this.loadData();
+            },
+            loadData() {
+                var me = this;
+                var param = this.getSearchData();
+                axios.post('getUserRequestList', param).then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                this.grid_data = $data;
+                this.$.grid_panel.draw(this.grid_data);
+                app.dispatchEvent(new Event("load_complete", {
+                    detail: {}
+                }));
+            },
+            date_change() {
+                this.$.date_box.disabled = !this.$.date_chk.checked;
+            },
+            filterData() {
+                var filter = this.$.filter_txt.value;
+                this.$.grid_panel.getGrid().items = _.filter(this.grid_data, function(item) {
+                    if(item.id == filter || filter == "") {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            paging(event) {
+                this.loadData();
+            },
+            confirm() {
+                var a = this.$.grid_panel.getSelectList();
+                log.info(a);
+                var alert = alertify.confirm("승인", "승인?", () => {
+                    this.applyConfim();
+                }, () => {}).moveTo(window.innerWidth / 2 - 125, window.innerHeight / 2 - 100);
+            },
+            reject() {
+                var a = this.$.grid_panel.getSelectList();
+                log.info(a);
+                var alert = alertify.confirm("승인", "거부?", () => {
+                    log.info("고");
+                }, () => {
+                    log.info("고고");
+                }).moveTo(window.innerWidth / 2 - 125, window.innerHeight / 2 - 100);
+            },
+            applyConfim() {
+                axios.post('confirmRequest', param).then(function(response) {
+                    me.parseDataCnt(response.data);
+                });
+            }
+        });
+    </script>
+</dom-module>

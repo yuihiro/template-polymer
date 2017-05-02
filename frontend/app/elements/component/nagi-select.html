@@ -1,0 +1,101 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-select">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                min-width: 100px;
+            }
+        </style>
+        <select id="el"></select>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-select',
+            properties: {
+                data: {
+                    type: Array
+                },
+                prompt: {
+                    type: String,
+                    value: "SELECT"
+                },
+                value: {
+                    type: String,
+                    observer: "_valueChange",
+                },
+                theme: {
+                    type: String,
+                    value: "default"
+                }
+            },
+            _valueChange(value) {
+                if(value && this.el) {
+                    if(value != this.el.val()) {
+                        this.el.val(this.value).trigger('change');
+                    }
+                }
+            },
+            ready() {
+                this.el = null;
+                var id = "el_" + _.random(0, 100000);
+                this.$.el.id = id;
+                this.selector = "#" + id;
+            },
+            attached() {
+                this.init();
+            },
+            init() {
+                var me = this;
+                var data = this.convertData(this.data);
+                var option = {
+                    minimumResultsForSearch: Infinity,
+                    placeholder: me.prompt,
+                    data: data,
+                    width: "100%",
+                    theme: me.theme
+                };
+                this.el = $(this.selector).select2(option).on("select2:selecting", function(event) {
+                    me.value = event.params.args.data.id;
+                    me.fire("change", {
+                        label: event.params.args.data.text,
+                        value: event.params.args.data.id
+                    });
+                });
+            },
+            convertData(data) {
+                if(_.isArray(data) == false || data.length === 0) {
+                    return [];
+                }
+                var result = _.map(data, function(item) {
+                    return {
+                        'text': item.label,
+                        'id': item.value
+                    }
+                });
+                return result;
+            },
+            getLabel() {
+                return Uti.getElementId(this);
+            },
+            getValue() {
+                var items = this.el.select2('data');
+                if(items.length == 0) {
+                    return "";
+                }
+                return items[0].id;
+                // return _.map(items, function(item) {
+                //     return {
+                //         label: item.id,
+                //         value: item.text
+                //     }
+                // });
+            },
+            detached() {
+                if(this.el != null) {
+                    this.el.select2().unbind("select2:selecting");
+                    this.el = null;
+                }
+            }
+        });
+    </script>
+    </polymer-element>

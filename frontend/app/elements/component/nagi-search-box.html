@@ -1,0 +1,85 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-search-box">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 100%;
+                height: 100%;
+                padding: 5px;
+                @apply --layout-vertical;
+                @apply --layout-start-justified;
+            }
+
+            paper-button {
+                width: 100%;
+            }
+
+             ::content {
+                padding-left: 10px !important;
+            }
+
+            .ui.button {
+                height: 30px;
+                margin: 0px !important;
+                padding: 0px !important;
+                color: #106cc8 !important;
+                box-shadow: 0px 0px 0px 1px #106cc8 !important;
+            }
+
+            .ui.button:hover {
+                background-color: #106cc8 !important;
+                color: white !important;
+            }
+
+            label {}
+        </style>
+        <div class="ui form">
+            <content id="content"></content>
+        </div>
+        <nagi-divider style="height:20px"></nagi-divider>
+        <!--<button class="fluid ui basic button" on-click="search"><i class="icon search"></i>검색</button>-->
+        <paper-button on-click="search" class="invert" noink>
+            <iron-icon icon="search"> </iron-icon>검색</paper-button>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-search-box',
+            properties: {},
+            ready() {
+                // var nodes = this.getContentChildren('#content');
+                // var idx = 0;
+                // _.each(nodes, function(node) {
+                //     idx++;
+                //     if(idx == 1) return;
+                //     var insert = document.createElement('span');
+                //     insert.style.height = "5px";
+                //     node.parentNode.insertBefore(insert, node);
+                // });
+            },
+            attached() {},
+            init() {},
+            search() {
+                this.fire("search", null);
+                //this.fire("search", this.getData());
+            },
+            getData() {
+                var data = {};
+                var nodes = this.getContentChildren('#content');
+                _.each(nodes, function(node) {
+                    var item = node.children[1];
+                    if(typeof item.getValue == "function") {
+                        data[item.getLabel()] = item.getValue();
+                    } else {
+                        var id = item.id.split("_")[0]
+                        data[id] = item.value;
+                    }
+                    if(item.localName == "nagi-date") {
+                        item = node.children[2];
+                        data[item.getLabel()] = item.getValue();
+                    }
+                });
+                return data;
+            }
+        });
+    </script>
+    </polymer-element>

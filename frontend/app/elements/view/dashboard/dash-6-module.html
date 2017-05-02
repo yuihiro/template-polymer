@@ -1,0 +1,87 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="dash-6-module">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                padding: 10px;
+            }
+
+            .header {
+                @apply --layout-horizontal;
+                @apply --layout-center-center;
+                height: 40px;
+            }
+
+            label.title {
+                font-size: 16px;
+                font-weight: bold;
+                margin-right: 5px;
+                color: black;
+            }
+
+            label.sub-title {
+                font-size: 14px;
+                vertical-align: bottom;
+                color: #585757;
+            }
+
+            .main {
+                width: 100%;
+                height: calc(100% - 60px);
+            }
+
+            .segment {
+                width: 80%;
+                height: 80%;
+            }
+        </style>
+        <div class="header">
+            <label class="title">{{title}}</label>
+            <label class="sub-title">{{sub-title}}</label>
+            <span class="space"></span>
+        </div>
+        <div class="ui divider"></div>
+        <div class="layout horizontal center main">
+            <div class="ui segment">
+                <label class="header">10.10.30.14</label>
+                <div class="meta">
+                    <span class="date">2시간 34분 50초</span>
+                </div>
+                <div>
+                    <div class="meter"> </div>
+                    <span style="width:5px"></span>
+                    <div class="meter2"> </div>
+                    <span style="width:5px"></span>
+                    <div class="meter3"> </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="content"> <a class="header">10.10.30.15</a>
+                    <div class="meta">
+                        <span class="date">2시간 34분 50초</span>
+                    </div>
+                    <div class="description"> Kristy is an art director living in New York. </div>
+                </div>
+                <div class="extra content">
+                    <a> <i class="user icon"></i> 22 Friends </a>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'dash-6-module',
+            properties: {
+                title: {
+                    type: String
+                }
+            },
+            ready() {},
+            attached() {
+                this.async(this.init);
+            },
+            init() {},
+            loadData(e) {}
+        });
+    </script>
+</dom-module>

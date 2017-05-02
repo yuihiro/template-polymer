@@ -1,0 +1,5 @@
+{
+	"log": "debug",
+    "ajax_url": "http://localhost:9000/api/"
+    
+}

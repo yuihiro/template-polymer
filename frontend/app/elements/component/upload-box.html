@@ -1,0 +1,92 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="upload-box">
+    <template>
+        <style>
+             :host {
+                @apply --layout-flex-vertical;
+            }
+
+            input {
+                display: none;
+            }
+
+            .container {
+                @apply --layout-flex-horizontal;
+                @apply --layout-center-center;
+            }
+        </style>
+        <paper-input readonly always-float-label label="이름" style="width:100px" value={{file_name}}></paper-input>
+        <paper-input readonly always-float-label label="Input label" style="width:100px"></paper-input>
+        <paper-input readonly always-float-label label="Input label" style="width:100px"></paper-input>
+        <paper-input readonly always-float-label label="Input label" style="width:100px"></paper-input>
+        <div class="container">
+            <paper-button raised on-click="click">파일선택</paper-button>
+            <paper-button id="upload_btn" raised on-click="upload" disabled$={{setDisabled}}>파일업로드</paper-button>
+            <input type="file" id="file_input" on-change="select" hidden></input>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'upload-box',
+            properties: {
+                file_selected: {
+                    type: Boolean,
+                    value: false
+                },
+                file_name: {
+                    type: String,
+                    value: "없음"
+                }
+            },
+            attached() {},
+            click() {
+                var event = document.createEvent('MouseEvents');
+                event.initEvent('click', true, false);
+                this.$.file_input.dispatchEvent(event);
+            },
+            select(event) {
+                this.file = event.target.files[0];
+                this.file.progress = 0;
+                this.file.error = false;
+                this.file.complete = false;
+            },
+            success(file, message) {
+                log.info("success");
+            },
+            error(file, message) {
+                log.info("errpr");
+            },
+            upload() {
+                log.info(this.file);
+                var data = new FormData();
+                data.append('file', this.file);
+                var config = {
+                    onUploadProgress(progressEvent) {
+                        var percent = progressEvent.loaded / progressEvent.total;
+                        log.info(percent);
+                    }
+                };
+                axios.put('/upload', data, config).then(function(res) {
+                    log.info(res);
+                }).catch(function(err) {
+                    log.info(err);
+                });
+            },
+            cancel() {
+                if(this.file != undefined) {
+                    if(this.file.xhr) {
+                        this.file.xhr.abort();
+                    }
+                }
+            },
+            setDisabled() {
+                log.info(this.file);
+                if(this.file != undefined) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    </script>
+</dom-module>

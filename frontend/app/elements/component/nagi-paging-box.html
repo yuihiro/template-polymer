@@ -1,0 +1,107 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-paging-box">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                @apply --layout-horizontal;
+                @apply --layout-center-center;
+            }
+
+            label {
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            label.page {
+                font-size: 13px;
+            }
+
+            paper-icon-button {
+                padding-top: 5px;
+                width: 25px;
+                height: 25px;
+                color: #777777 !important;
+            }
+
+            paper-icon-button[disabled] {
+                color: #C9C9C9 !important;
+            }
+
+            paper-icon-button:hover {
+                color: black !important;
+                border: none !important;
+            }
+        </style>
+        <span class="flex"></span>
+        <label>{{total_txt}}</label>
+        <span style="width:5px"></span>
+        <div id="container">
+            <paper-icon-button id="prev_btn" icon="icons:chevron-left" data-value="prev" on-click="paging" noink></paper-icon-button>
+            <label class="page">{{page_txt}}</label>
+            <paper-icon-button id="next_btn" icon="icons:chevron-right" data-value="next" on-click="paging" noink></paper-icon-button>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-paging-box',
+            properties: {
+                limit: {
+                    type: Number,
+                    value: 50
+                },
+            },
+            ready() {},
+            attached() {},
+            init($total) {
+                this.offset = 0;
+                this.total = $total;
+                this.current_page = 1;
+                this.total_page = Math.ceil(this.total / this.limit);
+                this.total_txt = "총 " + this.total + "건";
+                if(this.total == 0 || this.total_page <= 1) {
+                    this.$.container.hidden = true;
+                } else {
+                    this.$.container.hidden = false;
+                }
+                this.updateState();
+            },
+            paging(e) {
+                var type = e.currentTarget.getAttribute("data-value");
+                if(type == "prev") {
+                    if(this.current_page > 1) {
+                        this.current_page--;
+                    }
+                } else {
+                    if(this.current_page < this.total_page) {
+                        this.current_page++;
+                    }
+                }
+                this.updateState();
+                this.offset = (this.current_page - 1) * this.limit;
+                this.fire("page", {
+                    offset: this.offset,
+                    limit: this.limit,
+                });
+            },
+            updateState() {
+                this.page_txt = this.current_page + "/" + this.total_page;
+                if(this.current_page == 1) {
+                    this.$.prev_btn.disabled = true;
+                } else {
+                    this.$.prev_btn.disabled = false;
+                }
+                if(this.current_page == this.total_page) {
+                    this.$.next_btn.disabled = true;
+                } else {
+                    this.$.next_btn.disabled = false;
+                }
+            },
+            getValue() {
+                return {
+                    'offset': this.offset,
+                    'limit': this.limit,
+                }
+            },
+        });
+    </script>
+    </polymer-element>

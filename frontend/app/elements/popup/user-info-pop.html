@@ -1,0 +1,401 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="user-info-pop">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 550px;
+                margin: 0px;
+                /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;*/
+            }
+
+            .content {
+                padding: 5px 10px;
+                height: 450px;
+                background-color: white;
+            }
+
+            vaadin-combo-box {
+                width: 100%;
+                margin-right: 5px;
+            }
+
+            paper-input {
+                width: 100%;
+                margin-right: 5px;
+            }
+
+            paper-input:last-child {
+                margin-right: 0px;
+            }
+            /*div[suffix]:not([icon]) {
+				color: red;
+			}
+
+			div([suffix][icon]) {
+				height: 25px;
+			}*/
+
+            label {
+                font-size: 12px !important;
+                padding-bottom: 5px;
+                font-weight: 600;
+            }
+
+            label[required]::after {
+                content: "*";
+                color: red;
+            }
+
+            nagi-divider {
+                height: 20px;
+                /*--divider-color: #dedede;*/
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="popup-toolbar">
+                <label class="popup-title">{{title}}</label>
+                <span class="space"></span>
+                <paper-icon-button id="refresh_btn" icon="refresh" on-click="loadData" class="popup-icon-button"></paper-icon-button>
+                <paper-icon-button icon="close" dialog-dismiss class="popup-icon-button"></paper-icon-button>
+            </paper-toolbar>
+            <div class="popup-main">
+                <paper-tabs selected="{{tab_idx}}" noink class="pop-tabs">
+                    <paper-tab>기본정보</paper-tab>
+                    <paper-tab>상세정보</paper-tab>
+                    <paper-tab>설정정보</paper-tab>
+                    <paper-tab>인적정보</paper-tab>
+                </paper-tabs>
+                <iron-pages selected="{{tab_idx}}" class="layout vertical flex" style="padding-top:10px">
+                    <div class="layout vertical content">
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left" required>타입</label>
+                                <nagi-select style="width:100%;" data$=[[user_type_lst]] id="f_type"></nagi-select>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left" required>레벨</label>
+                                <nagi-select style="width:100%;" data$=[[user_level_lst]] id="f_level"></nagi-select>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left" required>상태</label>
+                                <nagi-select style="width:100%;" data$=[[user_status_lst]] id="f_status"></nagi-select>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left" required>이름</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" style="text-align:center" auto-validate required minlength="4" maxlength="10" id="f_name"> </div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout horizontal flex">
+                                <div class="layout vertical center flex">
+                                    <label style="width:100%;text-align:left" required>ID</label>
+                                    <div class="ui input" style="width:100%">
+                                        <input type="text" style="text-align:center" auto-validate required minlength="4" maxlength="10" id="f_id" disabled> </div>
+                                </div>
+                                <span style="width:20px"></span>
+                                <div class="layout vertical center flex">
+                                    <label style="width:100%;text-align:left" required>Email</label>
+                                    <div class="ui input" style="width:100%">
+                                        <input type="text" id="f_email" style="text-align:center" required auto-validate placeholder="mail@mail.net"> </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left" required>사용자그룹</label>
+                                <nagi-select style="width:100%;" data$=[[dept_lst]] id="f_dept_id"></nagi-select>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left" required>NAS그룹</label>
+                                <nagi-select style="width:100%;" data$=[[nas_group_lst]] id="f_nas_group_id"></nagi-select>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout horizontal flex">
+                                <div class="layout vertical center flex">
+                                    <label style="width:100%;text-align:left" required>비밀번호</label>
+                                    <div class="ui input" style="width:100%">
+                                        <input type="password" id="f_pwd" style="text-align:center" required type="password" minlength="8" maxlength="10"> </div>
+                                </div>
+                                <span style="width:20px"></span>
+                                <div class="layout vertical center flex">
+                                    <label style="width:100%;text-align:left" required>비밀번호 확인</label>
+                                    <div class="ui input" style="width:100%">
+                                        <input type="password" id="f_pwd_confirm" style="text-align:center" required type="password" minlength="8" maxlength="10"> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layout vertical content">
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">최근인증시간</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_last_login_time" style="text-align:center" disabled> </div>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">비밀번호변경시간</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_last_pwd_time" style="text-align:center" disabled> </div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">생성시간</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_create_time" style="text-align:center" disabled> </div>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">수정시간</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_change_time" style="text-align:center" disabled> </div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">생성방법</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_hr_sync" style="text-align:center" disabled> </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layout vertical content">
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">유효기간</label>
+                                <div class="layout horizontal center">
+                                    <nagi-date id="f_validity_begin" style="width:100%"></nagi-date>
+                                    <label> ~ </label>
+                                    <nagi-date id="f_validity_end" style="width:100%"></nagi-date>
+                                </div>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout horizontal flex">
+                                <div class="layout vertical center flex">
+                                    <label style="width:100%;text-align:left">비밀번호 유지기간</label>
+                                    <div class="ui right labeled input" style="width:100%">
+                                        <input type="text" id="f_pwd_life_time" style="text-align:center" required auto-validate>
+                                        <div class="ui basic label" style="height:30px;padding-top:8px">일</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">사용시간제한</label>
+                                <div class="layout horizontal center center-justified">
+                                    <paper-checkbox>월</paper-checkbox>
+                                    <paper-checkbox>화</paper-checkbox>
+                                    <paper-checkbox>수</paper-checkbox>
+                                    <paper-checkbox>목</paper-checkbox>
+                                    <paper-checkbox>금</paper-checkbox>
+                                    <paper-checkbox>토</paper-checkbox>
+                                    <paper-checkbox>일</paper-checkbox>
+                                    <paper-checkbox>평일</paper-checkbox>
+                                    <paper-checkbox>주말</paper-checkbox>
+                                </div>
+                                <span style="height:20px"></span>
+                                <div class="layout horizontal center center-justified">
+                                    <nagi-time id="f_begin_time"></nagi-time>
+                                    <nagi-time id="f_end_time"></nagi-time>
+                                </div>
+                                <!-- <div class="ui action input" style="width:100%">
+										<input type="text" style="text-align:center">
+										<button class="ui icon button" style="height:30px;padding-top:8px"> <i class="setting icon"></i> </button>
+									</div> --></div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">중복로그인경고</label>
+                                <div class="layout horizontal center end-justified" style="width:100%;height:34px;padding-right:5px;border:1px solid #dedede">
+                                    <paper-checkbox>사용</paper-checkbox>
+                                </div>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">802.1X</label>
+                                <div class="layout horizontal center end-justified" style="width:100%;height:34px;padding-right:5px;border:1px solid #dedede">
+                                    <paper-checkbox id="f_one_x_use">사용</paper-checkbox>
+                                    <!-- <div class="ui toggle checkbox">
+											<label>사용</label>
+											<input type="checkbox" id="one_x_chk"> </div> --></div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">EAP알고리즘</label>
+                                <nagi-select style="width:100%;" data$=[[eap_algo_lst]] id="f_eap_algo"></nagi-select>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">동시접속사용자</label>
+                                <input type="number" min="0" max="10" id="f_simultaneous_use" style="width:100%;height:30px"></input>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">VLAN ID</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_vlan_id" style="text-align:center"> </div>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">HW인증 ID</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_hw_id" style="text-align:center"> </div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">인증응답 부가속성</label>
+                                <div class="field" style="width:100%"> <textarea id="f_auth_resp_ext_attr" style="width:100%"></textarea> </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layout vertical content">
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">회사명</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_company" style="text-align:center"> </div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">사번</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_hr_emp_num" style="text-align:center"> </div>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">직급</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_hr_title" style="text-align:center"> </div>
+                            </div>
+                        </div>
+                        <span style="height:20px"></span>
+                        <div class="layout horizontal">
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">전화번호</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_tel" placeholder="000-000-0000" maxlength="20" style="text-align:center"> </div>
+                            </div>
+                            <span style="width:20px"></span>
+                            <div class="layout vertical center flex">
+                                <label style="width:100%;text-align:left">휴대폰</label>
+                                <div class="ui input" style="width:100%">
+                                    <input type="text" id="f_mobile" placeholder="000-000-0000" maxlength="20" style="text-align:center"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </iron-pages>
+                <div class="popup-footer">
+                    <paper-button on-click="save" class="invert" noink>저장</paper-button>
+                    <paper-button dialog-dismiss class="invert" noink>취소</paper-button>
+                </div>
+            </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'user-info-pop',
+        properties: {},
+        behaviors: [
+            Polymer.PaperDialogBehavior
+        ],
+        ready() {
+            app.view.defaultPopup(this);
+            //this.$.type_cb.$.input.readOnly = true;
+            //this.$.dept_cb.$.input.readOnly = true;
+            //초기화
+            this.title = "사용자 정보";
+            this.mode = "view";
+            this.tab_idx = 0;
+            this.info_id = null;
+            this.info = {};
+            this.user_type_lst = _.concat(app.data.user_type_lst);
+            this.user_level_lst = _.concat(app.data.user_level_lst);
+            this.user_status_lst = _.concat(app.data.user_status_lst);
+            this.eap_algo_lst = _.concat(app.data.eap_algo_lst);
+            this.dept_lst = _.concat(app.data.dept_lst);
+            this.nas_group_lst = _.concat(app.data.nas_group_lst);
+        },
+        attached() {},
+        init(data) {
+            if(data == null) {
+                this.mode = "add";
+                this.title = "사용자 추가";
+                this.info = {
+                    // type: this.user_type_lst[0].id,
+                    // dept_id: this.dept_lst[0].id,
+                    // nas_group_id: this.nas_group_lst[0].id,
+                    // status: this.user_status_lst[0].value,
+                    // eap: this.eap_algo_lst[0].value
+                };
+                this.$.refresh_btn.hidden = true;
+                this.open();
+            } else {
+                this.info_id = data.id;
+                this.title = "사용자 정보 / " + this.info_id;
+                this.loadData();
+            }
+        },
+        loadData() {
+            var me = this;
+            var param = {
+                id: this.info_id
+            }
+            axios.post('getUserInfo', param).then(function(response) {
+                me.parseData(response.data);
+            });
+        },
+        parseData($data) {
+            this.info = $data;
+            FormUtil.setFormData(this, this.info);
+            this.open();
+        },
+        save() {
+            //this.$.form.submit();
+            //log.info(this.$.form.validate());
+            var info = FormUtil.getFormData(this);
+            info.id = this.info_id;
+            var encrypted = CryptoJS.AES.encrypt("Message", "unetangel");
+            var decrypted = CryptoJS.AES.decrypt(encrypted, "unetangel");
+            info.one_x_use = (info.one_x_use == true) ? "Y" : "N";
+            this.saveData(info);
+        },
+        saveData($data) {
+            var me = this;
+            var param = $data;
+            axios.post('updateUserInfo', param).then(function(response) {
+                app.showAlert("알림", "저장되었습니다.");
+            });
+        },
+        popupDeptList() {},
+        popupMacList() {
+            var popup = app.view.createPopup("admin-pop");
+            popup.init('2071', this);
+        },
+        setMac($value) {}
+    });
+</script>

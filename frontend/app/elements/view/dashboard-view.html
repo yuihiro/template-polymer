@@ -1,0 +1,110 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="dashboard-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+            .ui.divider {
+                height: 50px;
+                margin: 0px;
+            }
+
+            nagi-select {
+                background: transparent;
+            }
+
+            .label {
+                font-weight: 600;
+            }
+
+            nagi-divider[align=v] {
+                height: 20px;
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <label>[[subTitle]]</label>
+                <span class="divider">/</span>
+                <label class="view-title">[[title]]</label>
+                <span class="flex"></span>
+                <div class="layout horizontal center">
+                    <label class="label">주기</label>
+                    <div style="width:10px"> </div>
+                    <nagi-select id="combo" on-select="selectLogout" data$={{data}} theme="paper"></nagi-select>
+                    <nagi-divider align="v" color="white"></nagi-divider>
+                    <label class="label">최근업데이트</label>
+                    <div style="width:10px"> </div>
+                    <label>{{update_time}}</label>
+                    <div style="width:5px"> </div>
+                </div>
+            </paper-toolbar>
+            <div class="layout vertical flex view-main">
+                <div class="layout horizontal flex">
+                    <dash-1-module class="flex" title="센서현황" sub-title="sensor status"></dash-1-module>
+                    <div style="width:50px"> </div>
+                    <dash-2-module class="flex" title="AP현황" sub-title="sensor status"></dash-2-module>
+                    <div style="width:50px"> </div>
+                    <dash-3-module class="flex" title="단말현황" sub-title="sensor status"></dash-3-module>
+                </div>
+                <div class="ui hidden divider"></div>
+                <div class="layout horizontal flex">
+                    <dash-6-module class="flex" title="인증현황" sub-title="sensor status"></dash-6-module>
+                    <div style="width:50px"> </div>
+                    <dash-4-module class="flex" title="사용자현황" sub-title="sensor status"></dash-4-module>
+                    <div style="width:50px"> </div>
+                    <dash-5-module class="flex" title="트래픽현황" sub-title="sensor status"></dash-5-module>
+                </div>
+            </div>
+        </paper-header-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'dashboard-view',
+            properties: {
+                title: {
+                    type: String
+                },
+                subTitle: {
+                    type: String
+                }
+            },
+            ready() {
+                this.refresh_interval = 3000;
+                this.update_interval = null;
+                this.update_time = moment().format("YYYY-MM-DD HH:MM:SS");
+                this.data = [{
+                    label: "사용안함",
+                    value: 1
+                }, {
+                    label: "10분",
+                    value: 2
+                }, {
+                    label: "20분",
+                    value: 3
+                }, {
+                    label: "30분",
+                    value: 4
+                }];
+                this.$.combo.data = this.data;
+            },
+            attached() {
+                this.update_interval = setInterval(this.loadData.bind(this), this.refresh_interval);
+                this.async(this.init);
+            },
+            detached() {
+                clearInterval(this.update_interval);
+            },
+            init() {},
+            loadData() {
+                var me = this;
+                axios.get('getStatusData').then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                this.status_info = $data;
+                this.update_time = moment().format("YYYY-MM-DD HH:MM:SS");
+            },
+        });
+    </script>
+</dom-module>

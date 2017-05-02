@@ -1,0 +1,184 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="user-group-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+            .summary {
+                @apply --layout-vertical;
+                width: 700px;
+                height: 100%;
+            }
+
+            nagi-panel {
+                height: 50%;
+            }
+
+            .user {
+                height: 100%;
+            }
+
+            nagi-input {
+                --nagi-input-title-width: 80px;
+            }
+
+            #search_list_box {
+                height: calc(100% - 90px);
+            }
+
+            .v-space {
+                display: block;
+                height: 10px;
+            }
+            /*.iron-selected {
+				background-color: var(--google-blue-500);
+				color: white;
+			}*/
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <label>[[subTitle]]</label>
+                <span class="divider">/</span>
+                <label class="view-title">[[title]]</label>
+                <span class="flex"></span>
+                <div> </div>
+            </paper-toolbar>
+            <div class="view-main">
+                <div class="summary">
+                    <nagi-panel title="[[group_title]]" sub-title="[[group_sub_title]]">
+                        <div class="module_menu"> </div>
+                        <div class="module_main">
+                            <nagi-tree id="group_tree" data$="{{group_data}}" on-select="selectGroup"> </nagi-tree>
+                        </div>
+                    </nagi-panel>
+                    <nagi-panel title="{{info_title}}" sub-title="{{info_sub_title}}">
+                        <div class="module_menu"> </div>
+                        <div class="module_main">
+                            <nagi-input id="type_cb" title="ID" no-search value="{{info.id}}"></nagi-input>
+                            <span class="v-space"></span>
+                            <nagi-input id="type_cb" title="이름" no-search value="{{info.name}}"></nagi-input>
+                            <span class="v-space"></span>
+                            <nagi-input id="type_cb" title="생성시간" no-search readonly value="{{info.create_time}}"></nagi-input>
+                            <span class="v-space"></span>
+                            <nagi-input id="type_cb" title="수정시간" no-search readonly value="{{info.change_time}}"></nagi-input>
+                            <span class="v-space"></span>
+                            <nagi-input id="type_cb" title="VLAN ID" no-search value="{{info.vlan_id}}"></nagi-input>
+                            <paper-button style="width:100%">
+                                <iron-icon icon="icons:save"> </iron-icon>저장</paper-button>
+                        </div>
+                    </nagi-panel>
+                </div>
+                <nagi-divider align="v"></nagi-divider>
+                <nagi-panel title="{{select_title}}" sub-title="{{select_sub_title}}" class="user">
+                    <div class="module_header">
+                        <paper-icon-button icon="icons:remove-circle" on-click="deleteUser" class="hint--left hint--no-animate invert" aria-label="삭제" noink></paper-icon-button>
+                    </div>
+                    <div class="module_main">
+                        <paper-list-box id="select_list_box" data={{select_data}}></paper-list-box>
+                    </div>
+                    <div class="module_footer"> </div>
+                </nagi-panel>
+                <nagi-divider align="v"></nagi-divider>
+                <nagi-panel title="{{search_title}}" sub-title="{{search_sub_title}}" class="user">
+                    <div class="module_header">
+                        <paper-icon-button icon="icons:add-circle" on-click="popupUserInfo" class="hint--left hint--no-animate invert" aria-label="추가" noink></paper-icon-button>
+                    </div>
+                    <div class="module_main">
+                        <div>
+                            <nagi-input id="id_input" title="ID"></nagi-input>
+                            <nagi-input id="name_input" title="이름"></nagi-input>
+                            <paper-button style="width:100%" on-click="loadSearchData">
+                                <iron-icon icon="icons:search"> </iron-icon>검색</paper-button>
+                        </div>
+                        <paper-list-box id="search_list_box" data={{search_data}}></paper-list-box>
+                    </div>
+                    <div class="module_footer"> </div>
+                </nagi-panel>
+            </div>
+        </paper-header-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'user-group-view',
+            properties: {
+                title: {
+                    type: String
+                },
+                subTitle: {
+                    type: String
+                }
+            },
+            ready() {
+                this.info = {};
+                this.group_title = "그룹 목록";
+                this.group_sub_title = "GROUP LIST";
+                this.info_title = "그룹 정보";
+                this.info_sub_title = "GROUP INFO";
+                this.select_title = "그룹 사용자 목록";
+                this.select_sub_title = "GROUP USER LIST";
+                this.search_title = "사용자 목록";
+                this.search_sub_title = "USER LIST";
+                this.group_data = _.concat(app.data.dept_tree_lst);
+                log.info(this.group_data);
+                this.select_data = [];
+                this.search_data = [];
+            },
+            attached() {},
+            refresh() {},
+            loadSearchData() {
+                var me = this;
+                var param = {
+                    id: this.$.id_input.getValue(),
+                    name: this.$.name_input.getValue()
+                }
+                log.info(param);
+                axios.post('getUserListByInfo', param).then(function(response) {
+                    me.parseSearchData(response.data);
+                });
+            },
+            parseSearchData($data) {
+                log.info($data);
+                this.search_data = $data;
+                //this.search_title = "사용자목록 (" + this.search_data.length + ")";
+            },
+            loadDeptData(value) {
+                var me = this;
+                var param = {
+                    dept_id: value
+                }
+                axios.post('getUserListByDept', param).then(function(response) {
+                    me.parseDeptData(response.data);
+                });
+            },
+            parseDeptData($data) {
+                //this.select_data = $data;
+                var data = [];
+                for(var i = 1; i <= 100; i++) {
+                    data.push({
+                        id: i,
+                        name: "하" + i
+                    });
+                }
+                this.select_data = data;
+                this.search_data = data;
+                //this.select_title = "소속사용자목록 (" + this.select_data.length + ")";
+            },
+            selectGroup(event) {
+                //this.info_title = "그룹정보 (" + event.detail.label + ")";
+                this.info = event.detail.data;
+                this.loadDeptData(event.detail.value);
+            },
+            addItem() {
+                log.info(this.$.search_list_box.getSelectData());
+            },
+            deleteItem() {
+                log.info(this.$.select_list_box.getSelectData());
+            },
+            save() {
+                log.info(this.$.group_tree.getData());
+                //this.$.tree.addNode();
+                this.$.group_tree.reload();
+            }
+        });
+    </script>
+</dom-module>

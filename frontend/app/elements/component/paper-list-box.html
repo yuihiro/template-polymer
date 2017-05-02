@@ -1,0 +1,80 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="paper-list-box">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+
+            #selector {
+                display: block;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+            }
+
+            .ui.divider {
+                height: 5px;
+                padding: 0px;
+                margin: 0px
+            }
+
+            .iron-selected {
+                /*background-color: var(--google-blue-500);
+				color: white;*/
+            }
+        </style>
+        <iron-selector id="selector" multi on-iron-select="_select" on-iron-deselect="_deselect">
+            <template is="dom-repeat" items="{{data}}">
+                <div name={{item.name}} id={{item.id}}>
+                    <div class="layout horizontal center" style="height:30px">
+                        <paper-checkbox>{{item.name}} ({{item.id}})</paper-checkbox>
+                    </div>
+                    <div class="ui divider"></div>
+                </div>
+            </template>
+        </iron-selector>
+    </template>
+    <script>
+        Polymer({
+            is: 'paper-list-box',
+            properties: {
+                data: {
+                    type: Array
+                }
+            },
+            ready() {},
+            attached() {
+                this.init();
+            },
+            _select(event) {
+                var checkbox = event.detail.item.children[0].children[0];
+                checkbox.checked = true;
+            },
+            _deselect(event) {
+                var checkbox = event.detail.item.children[0].children[0];
+                checkbox.checked = false;
+                //this.$.selector.deselectItem(event.model.item);
+            },
+            init() {
+                var me = this;
+            },
+            getSelectData() {
+                var items = this.$.selector.selectedItems;
+                if(items == null) {
+                    return [];
+                }
+                var result = items.map(function(item) {
+                    return {
+                        id: item.id,
+                        name: item.name
+                    }
+                });
+                return result;
+            },
+            detached() {}
+        });
+    </script>
+    </polymer-element>

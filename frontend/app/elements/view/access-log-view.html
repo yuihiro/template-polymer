@@ -1,0 +1,135 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="access-log-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <label>[[subTitle]]</label>
+                <span class="divider">/</span>
+                <label class="view-title">[[title]]</label>
+                <span class="flex"></span>
+                <div> </div>
+            </paper-toolbar>
+            <div class="view-main">
+                <nagi-panel title="검색" sub-title="SEARCH" class="search_container">
+                    <nagi-search-box id="search_box" on-search="refresh" class="module_main">
+                        <div class="field">
+                            <label>ID/이름</label>
+                            <nagi-input id="id_txt"></nagi-input>
+                        </div>
+                        <div class="field">
+                            <label>Login시간</label>
+                            <nagi-date-box id="date_box"></nagi-date-box>
+                        </div>
+                    </nagi-search-box>
+                </nagi-panel>
+                <nagi-divider align="v"></nagi-divider>
+                <nagi-grid-panel id="grid_panel" title="목록" sub-title="LIST" on-page=paging> </nagi-grid-panel>
+            </div>
+        </paper-header-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'access-log-view',
+            properties: {
+                title: {
+                    type: String
+                },
+                subTitle: {
+                    type: String
+                }
+            },
+            ready() {
+                this.grid_column_data = [{
+                    label: "Login시간",
+                    value: "login_time"
+                }, {
+                    label: "Logout시간",
+                    value: "logout_time"
+                }, {
+                    label: "지속시간",
+                    value: "time_gap",
+                    width: 100
+                }, {
+                    label: "ID",
+                    value: "user_id"
+                }, {
+                    label: "이름",
+                    value: "name"
+                }, {
+                    label: "부서",
+                    value: "dept_id"
+                }, {
+                    label: "MAC",
+                    value: "mac_str"
+                }, {
+                    label: "NAS",
+                    value: "nas_ip"
+                }, {
+                    label: "IP",
+                    value: "user_ip"
+                }, {
+                    label: "Input",
+                    value: "input"
+                }, {
+                    label: "Output",
+                    value: "output"
+                }];
+            },
+            attached() {
+                this.async(this.init, 300);
+            },
+            init() {
+                this.initGrid();
+                this.refresh();
+            },
+            initGrid() {
+                this.$.grid_panel.init({
+                    column: this.grid_column_data
+                });
+            },
+            refresh() {
+                this.loadDataCnt();
+            },
+            getSearchData() {
+                var result = {
+                    'UserName|name': FormUtil.getLikeStr(this.$.id_txt.getValue())
+                };
+                result["order"] = "AcctStartTime desc";
+                result = _.assign(result, this.$.date_box.getValue());
+                result = _.assign(result, this.$.grid_panel.getPageValue());
+                return result;
+            },
+            loadDataCnt() {
+                var me = this;
+                var param = this.getSearchData();
+                axios.post('getAccessLogListCnt', param).then(function(response) {
+                    me.parseDataCnt(response.data);
+                });
+            },
+            parseDataCnt($data) {
+                this.$.grid_panel.initPaging($data);
+                this.loadData();
+            },
+            loadData() {
+                var me = this;
+                var param = this.getSearchData();
+                axios.post('getAccessLogList', param).then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                this.grid_data = $data;
+                this.$.grid_panel.draw(this.grid_data);
+                app.dispatchEvent(new Event("load_complete", {
+                    detail: {}
+                }));
+            },
+            paging(event) {
+                this.loadData();
+            }
+        });
+    </script>
+</dom-module>

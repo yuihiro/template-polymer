@@ -1,0 +1,217 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="status-view">
+    <template>
+        <style include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                @apply --layout-vertical;
+                @apply --layout-center-center;
+                width: 150px;
+                height: 100%;
+                background-color: #464d55;
+                color: #EDEDED;
+                padding: 0px 10px 10px 10px;
+                /*box-shadow: 2px 0px 5px 0px black;*/
+                z-index: 100;
+                /*border-right: 2px solid #6d7780;*/
+                font-size: 13px;
+            }
+
+            .title-bar {
+                @apply --layout-horizontal;
+                @apply --layout-center-center;
+                width: 100%;
+                height: 35px;
+                /*background-color: #3b3e43;*/
+                border-bottom: 1px solid #6d7780;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .title-bar:not(:first-child) {
+                border-top: 1px solid #6d7780;
+            }
+
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                width: 100%;
+            }
+
+            .container>* {
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+
+            .chart {
+                height: 100px;
+                padding-left: 20px;
+            }
+
+            .bar {
+                width: 100%;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            paper-icon-button {
+                padding-left: 0px;
+            }
+
+            label {
+                color: #E2E2E2;
+                font-size: 12px;
+            }
+
+            #logout_btn {
+                width: 100%;
+            }
+
+            paper-checkbox {
+                --paper-checkbox-size: 15px;
+            }
+
+            paper-icon-button {
+                --paper-icon-button-hover: {
+                    border: none !important;
+                }
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .legend {
+                font-size: 11px;
+                width: 60px;
+            }
+        </style>
+        <div class="title-bar">기본정보</div>
+        <div class="container">
+            <label>사용자</label>
+            <span class="flex"></span>
+            <label> {{status_info.user_cnt}}건 </label>
+        </div>
+        <div class="container">
+            <label>NAS</label>
+            <span class="flex"></span>
+            <label> {{status_info.nas_cnt}}건 </label>
+        </div>
+        <div class="container">
+            <label>접속사용자</label>
+            <span class="flex"></span>
+            <label> {{status_info.user_online_cnt}}건 </label>
+        </div>
+        <div class="container">
+            <label>승인요청</label>
+            <span class="flex"></span>
+            <label> {{status_info.user_request_cnt}}건 </label>
+        </div>
+        <div class="title-bar">인증정보</div>
+        <div class="container">
+            <label>성공</label>
+            <span class="flex"></span>
+            <!--<paper-icon-button icon="image:tune"></paper-icon-button>-->
+            <label> {{status_info.auth_success_cnt}}건 </label>
+        </div>
+        <div class="container">
+            <label>실패</label>
+            <span class="flex"></span>
+            <!--<paper-icon-button icon="image:tune"></paper-icon-button>-->
+            <label> {{status_info.auth_fail_cnt}}건 </label>
+        </div>
+        <div class="title-bar">시스템정보</div>
+        <div class="container chart">
+            <nagi-meter id="meter_1" bar-color="#f09246"> </nagi-meter>
+            <span style="width:5px"></span>
+            <nagi-meter id="meter_2" bar-color="#f3e45b"> </nagi-meter>
+            <span style="width:5px"></span>
+            <nagi-meter id="meter_3" bar-color="#d9235c"> </nagi-meter>
+        </div>
+        <div class="title-bar">하드웨어정보</div>
+        <div class="bar">
+            <div class="layout horizontal center">
+                <span class="legend">CPU</span>
+                <nagi-meter id="meter_4" align="horizontal"> </nagi-meter>
+            </div>
+            <div class="layout horizontal center">
+                <span class="legend">MEM</span>
+                <nagi-meter id="meter_5" align="horizontal"> </nagi-meter>
+            </div>
+        </div>
+        <span class="space"> </span>
+        <paper-checkbox class="invert" on-change="toggleUpdate" id="update_chk">
+            <span class="subtitle">업데이트</span>
+        </paper-checkbox>
+        <span style="height:10px"> </span>
+        <paper-checkbox class="invert">
+            <span class="subtitle">이벤트알림</span>
+        </paper-checkbox>
+        <span style="height:10px"> </span>
+        <paper-checkbox class="invert">
+            <span class="subtitle">시스템알림</span>
+        </paper-checkbox>
+        <nagi-space height="20px"></nagi-space>
+        <paper-button id="logout_btn " on-click="logout" noink>
+            <iron-icon icon="icons:exit-to-app"></iron-icon>로그아웃</paper-button>
+    </template>
+    <script>
+        Polymer({
+            is: 'status-view',
+            hostAttributes: {
+                hidden: false
+            },
+            ready() {},
+            attached() {},
+            init() {
+                this.refresh_interval = 5000;
+                this.update_interval = null;
+                this.status_info = {
+                    cnt_1: 0,
+                    cnt_2: 0,
+                    cnt_3: 0,
+                    cnt_4: 0
+                };
+                $('.ui.progress').progress({
+                    percent: 50
+                });
+                this.update = DataUtil.toBoolean(localStorage.getItem("status_update"));
+                this.$.update_chk.checked = this.update;
+                this.toggleUpdate();
+                this.loadData();
+            },
+            refresh() {},
+            toggleUpdate() {
+                clearInterval(this.update_interval);
+                this.update_interval = null;
+                this.update = this.$.update_chk.checked;
+                if(this.update == true) {
+                    this.update_interval = setInterval(this.loadData.bind(this), this.refresh_interval);
+                }
+                localStorage.setItem("status_update", this.update);
+            },
+            loadData() {
+                axios.get('getStatusData').then((response) => {
+                    this.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                //_.assign(this.status_info, $data);
+                this.status_info = $data;
+                this.$.meter_1.value = _.random(0, 100) + " ";
+                this.$.meter_2.value = _.random(0, 100) + " ";
+                this.$.meter_3.value = _.random(0, 100) + " ";
+                this.$.meter_4.value = _.random(0, 100) + " ";
+                this.$.meter_5.value = _.random(0, 100) + " ";
+            },
+            logout() {
+                app.logout();
+            },
+            detached() {
+                clearInterval(this.update_interval);
+                this.update_interval = null;
+            },
+        });
+    </script>
+</dom-module>

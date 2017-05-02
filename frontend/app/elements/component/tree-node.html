@@ -1,0 +1,112 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="tree-node">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+            paper-checkbox.red {
+                --paper-checkbox-checked-color: var(--paper-red-500);
+                --paper-checkbox-checked-ink-color: var(--paper-red-500);
+                --paper-checkbox-unchecked-color: var(--paper-red-900);
+                --paper-checkbox-unchecked-ink-color: var(--paper-red-900);
+                --paper-checkbox-label-color: var(--paper-red-500);
+                --paper-checkbox-vertical-align: top;
+            }
+
+            paper-checkbox.green {
+                align-self: center;
+                border: 1px solid var(--paper-green-200);
+                padding: 8px 16px;
+                --paper-checkbox-checked-color: var(--paper-green-500);
+                --paper-checkbox-checked-ink-color: var(--paper-green-500);
+                --paper-checkbox-unchecked-color: var(--paper-green-900);
+                --paper-checkbox-unchecked-ink-color: var(--paper-green-900);
+                --paper-checkbox-label-color: var(--paper-green-500);
+                --paper-checkbox-label-spacing: 0;
+                --paper-checkbox-margin: 8px 16px 8px 0;
+                --paper-checkbox-vertical-align: top;
+            }
+
+            paper-checkbox.blue {
+                --paper-checkbox-checked-color: var(--paper-blue-500);
+                --paper-checkbox-checked-ink-color: var(--paper-blue-500);
+                --paper-checkbox-unchecked-color: var(--paper-blue-900);
+                --paper-checkbox-unchecked-ink-color: var(--paper-blue-900);
+                --paper-checkbox-label-color: var(--paper-blue-500);
+                --paper-checkbox-label-checked-color: var(--paper-blue-900);
+            }
+
+            paper-checkbox .subtitle {
+                display: block;
+                font-size: 0.8em;
+                margin-top: 2px;
+                max-width: 150px;
+            }
+        </style>
+        <div class="layout vertical">
+            <template is="dom-repeat" items="{{data}}">
+                <paper-card heading="{{item.first}}" style="padding:10px">
+                    <paper-checkbox checked="{{item.check}}" class="green">선택</paper-checkbox>
+                    <div class="card-content">{{item.last}}</div>
+                    <div class="layout vetical">
+                        <template is="dom-repeat" items="{{item.jobs}}">
+                            <div>
+                                <span>{{index}}</span>
+                                <span>{{item.first}}</span>
+                                <span>{{item.last}}</span>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="card-actions">
+                        <paper-button on-click="selectItem">선택</paper-button>
+                        <paper-button>취소</paper-button>
+                    </div>
+                </paper-card>
+            </template>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'tree-node',
+            ready() {
+                log.info("tree ready");
+                var sample = [{
+                    first: "하하",
+                    last: "흐흐",
+                    check: true,
+                    jobs: [{
+                        first: "노가",
+                        last: "프프"
+                    }, {
+                        first: "노가투",
+                        last: "프프ㄴㅁㅇㄹㄴㅁㅇㄹㄴㅇㄹㄴㅇㄹㄴㄹㅇ",
+                    }]
+                }, {
+                    first: "에엥",
+                    last: "흑흑",
+                    jobs: [{
+                        first: "노가",
+                        last: "프프",
+                    }]
+                }];
+                for(var i = 1; i <= 100; i++) {
+                    var item = {
+                        first: "하하" + i,
+                        last: "흐흐" + i,
+                        jobs: [{
+                            first: "노가" + i,
+                            last: "프프" + i,
+                        }]
+                    };
+                    sample.push(item);
+                }
+                this.data = sample;
+                log.info("parent element : " + Polymer.dom(this).getOwnerRoot().host.localName);
+            },
+            attached() {},
+            selectItem(e) {
+                log.info(e.model.index);
+                log.info(e.model.item);
+                //var item = this.$.data_list.itemForElement(e.target);
+            }
+        });
+    </script>
+    </polymer-element>

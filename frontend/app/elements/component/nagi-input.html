@@ -1,0 +1,77 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-input">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+             :host(:hover) #input {
+                border: 1px solid;
+                border-color: #85B7D9 !important;
+            }
+
+            #input {
+                text-align: center !important;
+                padding: 0px;
+            }
+        </style>
+        <div id="container" class="ui icon input flex">
+            <input id="input" readonly$="[[readonly]]" type="text" on-input="_input"></input> <i id="reset_btn" class="remove circle search link icon" on-click="reset"></i> </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-input',
+            properties: {
+                noSearch: {
+                    type: Boolean,
+                    value: false
+                },
+                readonly: {
+                    type: Boolean,
+                    value: false
+                },
+                value: {
+                    value: String,
+                    observer: "_valueChange"
+                }
+            },
+            _valueChange() {
+                if(this.noSearch) {
+                    this.$.input.value = this.value;
+                }
+            },
+            ready() {
+                if(this.noSearch) {
+                    Polymer.dom(this.$.container).classList.remove("icon");
+                    Polymer.dom(this.$.reset_btn.parentNode).removeChild(this.$.reset_btn);
+                }
+            },
+            attached() {
+                this.init();
+            },
+            init() {
+                this._input();
+            },
+            _input() {
+                if(this.noSearch) {
+                    return;
+                }
+                if(_.isEmpty(this.$.input.value)) {
+                    this.$.reset_btn.style.display = "none";
+                } else {
+                    this.$.reset_btn.style.display = "block";
+                }
+            },
+            reset() {
+                this.$.input.value = "";
+                this._input();
+                this.$.input.focus();
+            },
+            getLabel() {
+                return Uti.getElementId(this);
+            },
+            getValue() {
+                return this.$.input.value;
+            }
+        });
+    </script>
+    </polymer-element>

@@ -1,0 +1,302 @@
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 13px;
+    font-family: 'NanumGothic';
+    /*font-family: 'Nanum Barun Gothic';*/
+    --app-primary-color: #106cc8;
+    --main-text-color: #585757;
+    --box-outline: {
+        outline-style: solid;
+        outline-color: rgba(0, 0, 0, 0.2);
+        outline-width: 1px;
+    }
+}
+
+
+/*
+    기본 outline
+    box-shadow: 0 0 2px #0CF;
+    opacity: .8;
+*/
+
+html, body {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #106cc8 !important;
+    overflow: hidden;
+}
+
+.scroll {
+    overflow: auto;
+}
+
+.view {
+    background-color: white !important;
+    width: 100%;
+    height: 100%;
+}
+
+.popup {
+    background-color: white !important;
+    box-shadow: 0px 15px 20px 0px rgba(0, 0, 0, 0.25);
+}
+
+nagi-search-box div.field {
+    @apply --layout-vertical;
+}
+
+label[required]::after {
+    content: "*";
+    color: red;
+}
+
+textarea {
+    border: 1px solid;
+    border-color: #dedede !important;
+    border-radius: 4px !important;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #85B7D9 !important;
+    color: #585757 !important;
+    box-shadow: none !important;
+}
+
+input {
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid;
+    border-color: #dedede !important;
+    border-radius: 4px !important;
+    color: #585757 !important;
+}
+
+input:focus {
+    outline: none;
+    border-color: #85B7D9 !important;
+    color: #585757 !important;
+    box-shadow: none !important;
+}
+
+input[disabled] {
+    opacity: 1 !important;
+    background-color: #fafafa !important;
+}
+
+input[type="checkbox"] {
+    font-size: 12px !important;
+}
+
+input[type="number"], input[type="time"] {
+    width: 50px;
+    height: 30px;
+    text-align: center !important;
+    border: 1px solid !important;
+    border-color: #dedede !important;
+    border-radius: 4px !important;
+}
+
+input[type="number"]:focus, input[type="time"]:focus {
+    border: 1px solid;
+    border-color: #85B7D9 !important;
+}
+
+input::-webkit-input-placeholder, input:focus::-webkit-input-placeholder {
+    color: rgba(115, 115, 115, 0.87) !important;
+    opacity: 0.5;
+}
+
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVQYlWNgwAT/sYhhKPiPT+F/LJgEsHv37v+EMGkmkuImoh2NoQAANlcun/q4OoYAAAAASUVORK5CYII=) no-repeat center center;
+    width: 12px;
+    height: 15px;
+    background-size: 12px 15px;
+    border-left: 1px solid #BBB;
+    opacity: 0.6;
+}
+
+
+/* semantic */
+
+.ui.checkbox .box:after, .ui.checkbox label:after {
+    color: var(--app-primary-color) !important;
+    transition: opacity 0.5s ease !important;
+}
+
+[data-tooltip]:after {
+    font-size: 11px !important;
+    padding: 5px !important;
+}
+
+.ui.form .field {
+    margin: 0px 0px 5px 0px !important;
+}
+
+.ui.form .field label {
+    font-size: 11px !important;
+    padding-bottom: 5px;
+    color: #464d55 !important;
+    font-weight: 500 !important;
+}
+
+.ui.input input {
+    text-align: center !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.ui .basic {
+    height: 30px !important;
+    font-size: 12px !important;
+    padding-top: 7px !important;
+}
+
+.ui.icon.input input {
+    padding-left: 7px !important;
+    padding-right: 0px !important;
+}
+
+.ui.message .list:not(.ui) li:before {
+    position: absolute;
+    content: '-' !important;
+    left: -1em;
+    height: 100%;
+    vertical-align: baseline;
+}
+
+.ui-timepicker-wrapper {
+    width: 105px !important;
+}
+
+
+/* hint */
+
+[class*="hint--"]:after {
+    text-shadow: none !important;
+    background: white !important;
+    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3) !important;
+    color: black !important;
+}
+
+.hint--top-left:before {
+    border-top-color: white !important;
+}
+
+.hint--top-right:before {
+    border-top-color: white !important;
+}
+
+.hint--top:before {
+    border-top-color: white !important;
+}
+
+.hint--bottom-left:before {
+    border-bottom-color: white !important;
+}
+
+.hint--bottom-right:before {
+    border-bottom-color: white !important;
+}
+
+.hint--bottom:before {
+    border-bottom-color: white !important;
+}
+
+.hint--left:before {
+    border-left-color: white !important;
+}
+
+.hint--right:before {
+    border-right-color: white !important;
+}
+
+
+/*fancytree*/
+
+ul.fancytree-container {
+    width: 100%;
+    height: 100%;
+    outline: none !important;
+}
+
+
+/*ul.fancytree-container>*:nth-child(2n) {
+  background-color: gray !important;
+}*/
+
+
+/*jqmeter*/
+
+.therm {
+    border-radius: 2px !important;
+}
+
+.inner-therm span {
+    margin: 0px !important;
+    padding: 0px !important;
+    font-family: null !important;
+    font-size: 10px !important;
+    font-weight: normal !important;
+}
+
+
+/* spinner */
+
+.spinner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner>div {
+    width: 18px;
+    height: 18px;
+    background-color: white;
+    border-radius: 100%;
+    display: inline-block;
+    animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    margin-right: 15px;
+}
+
+.spinner .bounce1 {
+    animation-delay: -1.2s;
+}
+
+.spinner .bounce2 {
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
+}
+
+.spinner .bounce3 {
+    -webkit-animation-delay: -0.6s;
+    animation-delay: -0.6s;
+}
+
+.spinner .bounce4 {
+    -webkit-animation-delay: -0.3s;
+    animation-delay: -0.3s;
+}
+
+@keyframes sk-bouncedelay {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(2.0);
+    }
+}

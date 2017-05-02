@@ -1,0 +1,209 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="user-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <label>[[subTitle]]</label>
+                <span class="divider">/</span>
+                <label class="view-title">[[title]]</label>
+                <span class="flex"></span>
+                <div>
+                    <!-- <paper-fab-speed-dial direction="left">
+						<paper-fab mini icon="add" class="dropdown-trigger"></paper-fab>
+						<div class="dropdown-content">
+							<paper-fab mini icon="star-border" style="background-color:white;color:red"></paper-fab>
+							<paper-fab mini icon="star-half" style="background-color:white;color:red"></paper-fab>
+							<paper-fab mini icon="star" style="background-color:white;color:red"></paper-fab>
+						</div>
+					</paper-fab-speed-dial> -->
+                    <!--<paper-icon-button src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEyOCAxMjg7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMjggMTI4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiM0RDRENEQ7fQoJLnN0MXtmaWxsOiNGRkZGRkY7fQo8L3N0eWxlPjxjaXJjbGUgY2xhc3M9InN0MCIgY3g9IjY0IiBjeT0iNjQiIHI9IjY0Ii8+PGc+PHBhdGggY2xhc3M9InN0MSIgZD0iTTg3LjQsNTAuNWw5LjktOS45YzAuNC0wLjQsMC40LTEsMC0xLjRsLTguNS04LjVjLTAuNC0wLjQtMS0wLjQtMS40LDBsLTkuOSw5LjlMODcuNCw1MC41eiIvPjxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik03NC42LDQzLjVMMzgsODAuMWwtNC40LDEzYy0wLjMsMC44LDAuNSwxLjUsMS4zLDEuM2wxMy00LjRsMzYuNi0zNi42TDc0LjYsNDMuNXoiLz48L2c+PC9zdmc+" class="hint--bottom hint--no-animate" aria-label="추가" noink></paper-icon-button>-->
+                    <paper-icon-button icon="icons:add-circle" on-click="popupUserInfo" class="hint--bottom hint--no-animate" aria-label="추가" noink></paper-icon-button>
+                    <span style="width:5px"></span>
+                    <paper-icon-button icon="icons:remove-circle" on-click="deleteUser" class="hint--bottom hint--no-animate" aria-label="삭제" noink></paper-icon-button>
+                    <span style="width:5px"></span>
+                    <paper-button noink on-click="popupUserInfo">사용자구분 설정</paper-button>
+                    <paper-button noink on-click="popupUserApproveList">승인대기 목록</paper-button>
+                </div>
+            </paper-toolbar>
+            <div class="view-main">
+                <nagi-panel title="검색" sub-title="SEARCH" class="search_container">
+                    <nagi-search-box id="search_box" on-search="refresh" class="module_main">
+                        <div class="field">
+                            <label>ID/이름</label>
+                            <nagi-input id="id_txt"></nagi-input>
+                        </div>
+                        <div class="field">
+                            <label>접속</label>
+                            <nagi-select id="active_cb" data$=[[active_data]]></nagi-select>
+                        </div>
+                        <div class="field">
+                            <label>구분</label>
+                            <nagi-select id="type_cb" data$=[[type_data]]></nagi-select>
+                        </div>
+                        <div class="field">
+                            <label>부서</label>
+                            <nagi-select id="dept_cb" data$=[[dept_data]]></nagi-select>
+                        </div>
+                        <div class="field">
+                            <label>권한</label>
+                            <nagi-select id="level_cb" data$=[[level_data]]></nagi-select>
+                        </div>
+                        <div class="field">
+                            <label>상태</label>
+                            <nagi-select id="status_cb" data$=[[status_data]]></nagi-select>
+                        </div>
+                    </nagi-search-box>
+                </nagi-panel>
+                <nagi-divider align="v"></nagi-divider>
+                <nagi-grid-panel id="grid_panel" title="목록" sub-title="LIST" on-page=paging> </nagi-grid-panel>
+            </div>
+        </paper-header-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'user-view',
+            properties: {
+                title: {
+                    type: String
+                },
+                subTitle: {
+                    type: String
+                }
+            },
+            ready() {
+                this.grid_data = [];
+                this.active_data = DataUtil.addAllLabel(_.concat(app.data.active_lst));
+                this.type_data = DataUtil.addAllLabel(_.concat(app.data.user_type_lst));
+                this.level_data = DataUtil.addAllLabel(_.concat(app.data.user_level_lst));
+                this.status_data = DataUtil.addAllLabel(_.concat(app.data.user_status_lst));
+                this.dept_data = DataUtil.addAllLabel(_.concat(app.data.dept_lst));
+                this.grid_column_data = [{
+                    label: "ID",
+                    value: "id"
+                }, {
+                    label: "이름",
+                    value: "name"
+                }, {
+                    label: "접속",
+                    value: "active",
+                    width: 60
+                }, {
+                    label: "구분",
+                    value: "type_label"
+                }, {
+                    label: "부서",
+                    value: "dept_name"
+                }, {
+                    label: "권한",
+                    value: "level"
+                }, {
+                    label: "상태",
+                    value: "status_label",
+                    width: 60
+                }, {
+                    label: "NAS",
+                    value: "nas"
+                }, {
+                    label: "MAC",
+                    value: "mac"
+                }, {
+                    label: "IP",
+                    value: "ip"
+                }, {
+                    label: "최근접속시간",
+                    value: "last_login_time"
+                }];
+            },
+            attached() {
+                this.async(this.init, 100);
+            },
+            init() {
+                this.refresh();
+                this.$.grid_panel.init({
+                    'column': this.grid_column_data,
+                    'renderer': ViewUtil.createUserRenderer(this)
+                });
+            },
+            refresh() {
+                this.loadDataCnt();
+            },
+            getSearchData() {
+                var result = {
+                    'active': this.$.active_cb.getValue(),
+                    'type': this.$.type_cb.getValue(),
+                    'user_id|name': FormUtil.getLikeStr(this.$.id_txt.getValue()),
+                    'dept_id': this.$.dept_cb.getValue(),
+                    'level': this.$.level_cb.getValue(),
+                    'status': this.$.status_cb.getValue(),
+                };
+                result.order = "active desc, last_login desc";
+                return _.assign(result, this.$.grid_panel.getPageValue());
+            },
+            loadDataCnt() {
+                var me = this;
+                var param = this.getSearchData();
+                axios.post('getUserListCnt', param).then(function(response) {
+                    me.parseDataCnt(response.data);
+                });
+            },
+            parseDataCnt($data) {
+                this.$.grid_panel.initPaging($data);
+                this.loadData();
+            },
+            loadData() {
+                var me = this;
+                var param = this.getSearchData();
+                axios.post('getUserList', param).then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                this.grid_data = $data;
+                this.$.grid_panel.init({
+                    'column': this.grid_column_data
+                });
+                this.$.grid_panel.draw(this.grid_data);
+                app.dispatchEvent(new Event("load_complete", {
+                    detail: {}
+                }));
+            },
+            filterData() {
+                var filter = this.$.filter_txt.value;
+                this.$.admin_grid.items = _.filter(this.grid_data, function(item) {
+                    if(item.id == filter || filter == "") {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            popupUserInfo($id) {
+                if(_.isString($id) == false) {
+                    $id = null;
+                }
+                var popup = app.view.createPopup("user-info-pop");
+                popup.init({
+                    id: $id
+                });
+            },
+            popupUserApproveList() {
+                var popup = app.view.createPopup("user-approve-pop");
+            },
+            popupUserSetting() {},
+            deleteUser() {
+                var items = this.$.admin_grid.selection.selected();
+                if(items.length == 0) {
+                    app.showAlert("알림", "선택된 항목이 없네요.");
+                    return;
+                }
+                //var value = this.$.admin_grid.items[idx].id;
+            },
+            paging(event) {
+                this.loadData();
+            }
+        });
+    </script>
+</dom-module>

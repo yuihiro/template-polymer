@@ -1,0 +1,113 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="layout-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+            .gridster {
+                width: 100%;
+                height: 100%;
+                border: 1px solid red;
+                /*overflow: hidden;*/
+            }
+
+            ul {
+                width: 100%;
+                height: 100%;
+                padding: 0px;
+                margin: 0px;
+                border: 1px solid blue;
+                background-color: yellow;
+            }
+
+            li {
+                list-style: none;
+                line-height: 100%;
+            }
+
+            .gridster-box {
+                color: black;
+                font-size: 14px;
+                text-align: center;
+                position: relative;
+                width: 100%;
+                height: 100%;
+                background-color: white;
+                border: 1px solid gray;
+            }
+        </style>
+        <div class="gridster" id="container">
+            <ul id="ui">
+                <template is="dom-repeat" items="{{module_lst}}">
+                    <li data-sizey="1" data-sizex="1" data-col$="{{item.x}}" data-row$="{{item.x}}">
+                        <div class="gridster-box">{{index}}
+                            <div class="handle-resize"></div>
+                        </div>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'layout-view',
+            properties: {
+                user: {
+                    type: String,
+                    value: '디폴트'
+                }
+            },
+            ready() {
+                //중요 - 바인딩되는 객체에 바로 데이터를 추가하지말고 더미객체에 데이터를 set한후 객체에 대입
+                var data = [];
+                for(var i = 1; i <= 3; i++) {
+                    for(var k = 1; k <= 3; k++) {
+                        data.push({
+                            x: i,
+                            y: k
+                        });
+                    }
+                }
+                this.module_lst = data;
+            },
+            attached() {
+                //$('#grid').gridList('reflow');
+                this.async(this.init, 300);
+            },
+            init() {
+                log.info("app height : " + app.offsetHeight);
+                log.info("this height : " + this.$.container.offsetHeight);
+                var item_width = (this.$.container.clientWidth - 40) / 3;
+                var item_height = (this.$.container.clientHeight - 40) / 3;
+                var gridster = $(".gridster ul").gridster({
+                    widget_base_dimensions: [item_width, item_height],
+                    autogenerate_stylesheet: true,
+                    min_cols: 1,
+                    max_cols: 3,
+                    min_rows: 1,
+                    max_rows: 3,
+                    extra_cols: 0,
+                    extra_rows: 0,
+                    widget_margins: [10, 10],
+                    resize: {
+                        enabled: true,
+                        max_size: [3, 3]
+                    },
+                    shift_larger_widgets_down: false,
+                    draggable: {
+                        drag(e, ui) {
+                            //log.info("position : " + ui.position.left + "/" + ui.position.top);
+                            //log.info("client : " + e.clientX + "/" + e.clientY);
+                        }
+                        //scroll_container: $(".gridster")
+                    }
+                }).data('gridster');
+                // gridster.add_widget('<li><div class="gridster-box"></div></li>', 1, 1);
+                // gridster.add_widget('<li><div class="gridster-box"></div></li>', 1, 1);
+                // gridster.add_widget('<li><div class="gridster-box"></div></li>', 1, 1);
+                // gridster.add_widget('<li><div class="gridster-box"></div></li>', 1, 1);
+                // gridster.add_widget('<li><div class="gridster-box"></div></li>', 1, 1);
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="kor">
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.14.0/axios.min.js"></script>
+    </head>
+    <body>
+        <script>
+            axios.defaults.baseURL = "http://localhost:8080/api/";
+            axios.get('hi').then(function(response) {
+                log.info(response);
+            }).catch(function(error) {
+                log.info("엥");
+            });;
+        </script>
+    </body>
+</html>

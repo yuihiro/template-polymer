@@ -1,0 +1,64 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-check">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+            }
+
+             :host([label]):not(:last-child) {
+                margin-right: 10px;
+            }
+
+            #label {
+                font-size: 11px;
+                width: 1px;
+            }
+        </style>
+        <div id="container" class="ui checkbox" on-click="_change">
+            <input id="input" readonly$="[[readonly]]" disabled$="[[disabled]]" checked$="[[value]]" type="checkbox">
+            <label id="label">{{label}}</label>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-check',
+            properties: {
+                readonly: {
+                    type: Boolean
+                },
+                disabled: {
+                    type: Boolean
+                },
+                value: {
+                    type: Boolean,
+                },
+                label: {
+                    type: String,
+                    observer: "_labelChange"
+                }
+            },
+            _labelChange(value) {
+                if(value) {
+                    this.$.label.style.width = "100%";
+                }
+            },
+            ready() {},
+            attached() {
+                this.init();
+            },
+            init() {},
+            _change(e) {
+                this.fire("change", e.target.checked);
+            },
+            getLabel() {
+                return Uti.getElementId(this);
+            },
+            getValue() {
+                return this.$.input.checked;
+            },
+            detached() {}
+        });
+    </script>
+    </polymer-element>

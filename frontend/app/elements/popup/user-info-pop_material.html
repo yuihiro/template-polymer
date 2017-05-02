@@ -1,0 +1,249 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="user-info-pop">
+    <template>
+        <style include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 450px;
+                margin: 0px;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+            }
+
+            .content {
+                padding: 5px 10px;
+                height: 400px;
+                background-color: white;
+            }
+
+            .footer {
+                padding: 0px;
+                background-color: #fafafa;
+                border-top: #dedede 1px solid;
+                height: 40px;
+            }
+
+            vaadin-combo-box {
+                width: 100%;
+                margin-right: 5px;
+            }
+
+            paper-input {
+                width: 100%;
+                margin-right: 5px;
+            }
+
+            paper-input:last-child {
+                margin-right: 0px;
+            }
+
+            div[suffix]:not([icon]) {
+                color: red;
+            }
+
+            div([suffix][icon]) {
+                height: 25px;
+            }
+
+            paper-button {
+                color: black !important;
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="pop-toolbar">
+                <label class="view-title">{{title}}</label>
+                <span class="space"></span>
+                <paper-icon-button id="refresh_btn" icon="refresh" on-click="loadData"></paper-icon-button>
+                <paper-icon-button icon="close" dialog-dismiss></paper-icon-button>
+            </paper-toolbar>
+            <div>
+                <paper-tabs selected="{{tab_idx}}" noink class="pop-tabs">
+                    <paper-tab>기본정보</paper-tab>
+                    <paper-tab>상세정보</paper-tab>
+                    <paper-tab>설정정보</paper-tab>
+                    <paper-tab>인적정보</paper-tab>
+                </paper-tabs>
+                <form id="form" is="iron-form" on-submit="return false" autocomplete="off">
+                    <iron-pages selected="{{tab_idx}}" class="layout vertical flex">
+                        <div class="layout vertical content">
+                            <div class="layout horizontal">
+                                <vaadin-combo-box id="type_cb" label="구분" always-float-label items$="{{user_type_lst}}" value="{{info.type}}"></vaadin-combo-box>
+                                <vaadin-combo-box id="level_cb" label="레벨" always-float-label items$="{{user_level_lst}}" value="{{info.level}}"></vaadin-combo-box>
+                            </div>
+                            <div class="layout horizontal">
+                                <vaadin-combo-box id="status_cb" label="상태" always-float-label items$="{{user_status_lst}}" value="{{info.status}}"></vaadin-combo-box>
+                            </div>
+                            <div class="layout horizontal">
+                                <vaadin-combo-box id="dept_cb" label="사용자그룹" always-float-label items$="{{dept_lst}}" value="{{info.dept_id}}"></vaadin-combo-box>
+                                <vaadin-combo-box id="nas_group_cb" label="NAS그룹" always-float-label items$="{{nas_group_lst}}" value="{{info.nas_group_id}}"></vaadin-combo-box>
+                            </div>
+                            <div class="layout horizontal">
+                                <paper-input label="이름" always-float-label auto-validate required minlength="4" maxlength="10" autofocus value={{info.name}}>
+                                    <div suffix>*</div>
+                                </paper-input>
+                                <paper-input label="ID" always-float-label auto-validate required minlength="4" maxlength="10" value={{info.id}}>
+                                    <div suffix>*</div>
+                                </paper-input>
+                            </div>
+                            <div class="layout horizontal">
+                                <paper-input label="비밀번호" autocomplete="off" always-float-label required type="password" minlength="8" maxlength="10" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" value={{info.pwd}}>
+                                    <div suffix>*</div>
+                                </paper-input>
+                                <paper-input label="비밀번호 확인" autocomplete="off" always-float-label required type="password" minlength="8" maxlength="10" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" value={{info.pwd_confirm}}>
+                                    <div suffix>*</div>
+                                </paper-input>
+                            </div>
+                            <div class="layout horizontal">
+                                <paper-input label="이메일" always-float-label required auto-validate placeholder="mail@mail.net" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{1,3}$" value={{info.email}}>
+                                    <div suffix>*</div>
+                                </paper-input>
+                                <paper-input label="MAC주소" always-float-label required auto-validate placeholder="00:00:00:00:00:00" pattern="^((([0-9A-Fa-f]{2}:){5})|(([0-9A-Fa-f]{2}-){5}))[0-9A-Fa-f]{2}$">
+                                    <div suffix icon> <i style="height:25px" class="search circular link icon" on-click="popupMacList"></i> </div>
+                                </paper-input>
+                            </div>
+                        </div>
+                        <div class="layout vertical content">
+                            <div class="layout horizontal">
+                                <paper-input label="최근인증시간" always-float-label readonly value={{info.last_login_time}}> </paper-input>
+                                <paper-input label="비밀번호변경시간" always-float-label readonly value={{info.last_login_time}}> </paper-input>
+                            </div>
+                            <div class="layout horizontal">
+                                <paper-input label="생성시간" always-float-label readonly value={{info.create_time}}> </paper-input>
+                                <paper-input label="수정시간" always-float-label readonly value={{info.change_time}}> </paper-input>
+                            </div>
+                            <div class="layout horizontal">
+                                <paper-input label="유효기간" always-float-label readonly value={{info.create_time}}> </paper-input>
+                                <paper-input label="사용시간제한" always-float-label readonly value={{info.create_time}}> </paper-input>
+                            </div>
+                        </div>
+                        <div class="layout vertical content">
+                            <div class="layout horizontal">
+                                <vaadin-combo-box id="eap_cb" label="EAP알고리즘" always-float-label items$="{{eap_lst}}" value="{{info.eap_value}}" style="width:50%"></vaadin-combo-box>
+                                <div class="layout horizontal center" style="width:50%">
+                                    <label>동시접속사용자</label>
+                                    <input type="number" min="0" max="10" value="1"></input>
+                                </div>
+                            </div>
+                            <div class="layout horizontal">
+                                <div class="layout vertical flex">
+                                    <label>중복로그인경고</label>
+                                    <div class="ui toggle checkbox" style="width:100%">
+                                        <input type="checkbox" style="width:100%" name="public">
+                                        <label></label>
+                                    </div>
+                                </div>
+                                <div class="layout vertical flex">
+                                    <label>802.1X사용</label>
+                                    <div class="ui toggle checkbox" style="width:100%">
+                                        <input type="checkbox" name="public">
+                                        <label>sdfdsf</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layout vertical content">
+                            <div class="layout horizontal">
+                                <paper-input label="사번" always-float-label></paper-input>
+                                <paper-input label="직급" always-float-label></paper-input>
+                            </div>
+                            <div class="layout horizontal">
+                                <paper-input label="전화번호" always-float-label placeholder="000-000-0000" maxlength="20" value={{info.tel}}> </paper-input>
+                                <paper-input label="핸드폰" always-float-label placeholder="000-000-0000" maxlength="20" value={{info.mobile}}> </paper-input>
+                            </div>
+                        </div>
+                    </iron-pages>
+                </form>
+                <div class="layout horizontal end-justified center footer">
+                    <paper-button on-click="save" class="invert">확인</paper-button>
+                    <paper-button dialog-dismiss class="invert">취소</paper-button>
+                </div>
+            </div>
+    </template>
+</dom-module>
+<script>
+    (function() {
+        Polymer({
+            is: 'user-info-pop',
+            properties: {},
+            behaviors: [
+                Polymer.PaperDialogBehavior
+            ],
+            ready() {
+                this.noOverlap = false;
+                this.noAutoFocus = false;
+                this.alwaysOnTop = false;
+                this.withBackdrop = true;
+                this.modal = true;
+                this.canceled = true;
+                this.noCancelOnOutsideClick = true;
+                this.noCancelOnEscKey = false;
+                this.$.type_cb.$.input.readOnly = true;
+                this.$.dept_cb.$.input.readOnly = true;
+                //초기화
+                this.title = "계정정보";
+                this.mode = "view";
+                this.tab_idx = 0;
+                this.info_id = null;
+                this.info = {};
+                this.user_type_lst = _.concat(app.data.user_type_lst);
+                this.dept_lst = _.concat(app.data.dept_lst);
+                this.nas_group_lst = _.concat(app.data.nas_group_lst);
+                this.user_status_lst = _.concat(app.data.user_status_lst);
+            },
+            attached() {},
+            init($id) {
+                if($id == null) {
+                    this.mode = "add";
+                    this.title = "계정추가";
+                    this.info = {
+                        type: this.user_type_lst[0].id,
+                        dept_id: this.dept_lst[0].id,
+                        nas_group_id: this.nas_group_lst[0].id,
+                        status: user_status_lst[0].value
+                    };
+                    this.$.refresh_btn.hidden = true;
+                    this.open();
+                } else {
+                    this.info_id = $id;
+                    this.title = "계정정보 (" + this.info_id + ")";
+                    this.loadData();
+                }
+            },
+            loadData() {
+                var me = this;
+                var param = {
+                    id: this.info_id
+                }
+                axios.post('getUserInfo', param).then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                this.info = $data;
+                log.info(this.info);
+                this.open();
+            },
+            save() {
+                log.info(this.info);
+                this.$.form.submit();
+                log.info(this.$.form.validate());
+                if(this.$.form.validate() == true) {
+                    this.saveData();
+                }
+            },
+            saveData() {
+                var me = this;
+                var param = this.info;
+                axios.post('getUserInfo', param).then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            popupDeptList() {},
+            popupMacList() {
+                var popup = app.view.createPopup("admin-pop");
+                popup.init('2071', this);
+            },
+            setMac($value) {
+                log.info($value);
+            }
+        });
+    })();
+</script>

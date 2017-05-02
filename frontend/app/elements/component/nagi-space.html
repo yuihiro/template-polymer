@@ -1,0 +1,39 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-space">
+    <template>
+        <style>
+             :host {
+                display: block;
+                --space-width: 0px;
+                --space-height: 5px;
+                margin-right: var(--space-width);
+                margin-bottom: var(--space-height);
+            }
+        </style>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-space',
+            properties: {
+                width: {
+                    type: String,
+                    value: "5px",
+                    observer: '_widthChange'
+                },
+                height: {
+                    type: String,
+                    value: "5px",
+                    observer: '_heightChange'
+                }
+            },
+            _widthChange(width) {
+                this.customStyle['--space-width'] = width;
+                this.updateStyles();
+            },
+            _heightChange(height) {
+                this.customStyle['--space-height'] = height;
+                this.updateStyles();
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,179 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-tree">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 100%;
+                height: 100%;
+            }
+
+            div {
+                padding: 5px;
+                height: inherit;
+            }
+        </style>
+        <div class="tree"></div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-tree',
+            properties: {
+                data: {
+                    type: Array
+                },
+                checkable: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+            ready() {
+                this.el = null;
+            },
+            attached() {
+                this.init();
+            },
+            init() {
+                var me = this;
+                this.data = this.convertData(this.data);
+                var option = {
+                    extensions: ["dnd", "edit", "contextMenu"],
+                    imagePath: "../../images",
+                    checkbox: this.checkable,
+                    source: this.data,
+                    clickFolderMode: 4,
+                    autoScroll: false,
+                    selectMode: 3,
+                    toggleEffect: {
+                        effect: "fade",
+                        options: {
+                            direction: "vertical",
+                            scale: "box"
+                        },
+                        duration: 10
+                    },
+                    select(event, data) {},
+                    activate(event, data) {
+                        me.fire("select", {
+                            label: data.node.title,
+                            value: data.node.key,
+                            folder: data.node.isFolder(),
+                            data: data.node.data
+                        });
+                    },
+                    beforeSelect(event, data) {},
+                    dnd: {
+                        autoExpandMS: 400,
+                        focusOnClick: true,
+                        preventVoidMoves: true,
+                        preventRecursiveMoves: true,
+                        dragStart(node, data) {
+                            return true;
+                        },
+                        dragEnter(node, data) {
+                            return true;
+                        },
+                        dragDrop(node, data) {
+                            data.otherNode.moveTo(node, data.hitMode);
+                        }
+                    },
+                    contextMenu: {
+                        menu: {
+                            'edit': {
+                                'name': '수정',
+                                'icon': 'edit'
+                            },
+                            'add': {
+                                'name': '추가',
+                                'icon': 'add'
+                            },
+                            'delete': {
+                                'name': '삭제',
+                                'icon': 'cut'
+                            }
+                        },
+                        actions(node, action, options) {
+                            if(action == "add") {
+                                node.editCreateNode("child", "");
+                            } else if(action == "edit") {
+                                node.editStart();
+                            } else if(action == "delete") {
+                                node.remove();
+                            }
+                        }
+                    }
+                };
+                this.el = $('.tree').fancytree(option);
+                $(".tree").fancytree("getTree").getFirstChild().setActive();
+                this.expandAll();
+            },
+            expandAll() {
+                $(".tree").fancytree("getRootNode").visit(function(node) {
+                    node.setExpanded(true);
+                });
+            },
+            addNode() {
+                var item = $(".tree").fancytree("getActiveNode");
+                item.addChildren({
+                    title: "new node",
+                    tooltip: "This folder",
+                    folder: true
+                });
+            },
+            removeNode() {
+                var items = $(".tree").fancytree("getSelectedNodes");
+                _.each(items, function(item) {
+                    // while( node.hasChildren() ) {
+                    //         node.getFirstChild().moveTo(node.parent, "child");
+                    // }
+                    item.remove();
+                });
+            },
+            selectNode(value) {
+                $(".tree").fancytree("getTree").getNodeByKey(value).setActive();
+            },
+            reload() {
+                $(".tree").fancytree("getTree").clear();
+                $(".tree").fancytree("getTree").reload(this.data);
+                this.expandAll();
+            },
+            getCheckData() {
+                var items = $(".tree").fancytree("getTree").getSelectedNodes();
+                var result = _.map(items, function(item) {
+                    return {
+                        label: item.title,
+                        value: item.key,
+                        folder: item.isFolder()
+                    }
+                });
+                return result;
+            },
+            getData() {
+                return $(".tree").fancytree("getTree").toDict(true);
+            },
+            convertData(data) {
+                if(_.isArray(data) == false || data.length === 0) {
+                    return [];
+                }
+                var setData = function(items) {
+                    _.each(items, function(item) {
+                        item.title = item.label;
+                        item.key = item.value;
+                        item.folder = item.folder;
+                        if(item.children != null) {
+                            setData(item.children);
+                        }
+                    });
+                }
+                var total = data.length;
+                setData(data);
+                return data;
+            },
+            detached() {
+                if(this.el != null) {
+                    $('.tree').fancytree("destory");
+                    this.el = null;
+                }
+            },
+        });
+    </script>
+    </polymer-element>

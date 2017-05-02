@@ -1,0 +1,5 @@
+{
+    "entrypoint": "index.html",
+    "shell": "app/elements/elements.html",
+    "fragments": ["app/elements/**/*.html"]
+}

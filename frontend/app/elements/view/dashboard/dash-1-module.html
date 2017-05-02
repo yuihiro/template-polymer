@@ -1,0 +1,55 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="dash-1-module">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                padding: 10px;
+            }
+
+            .header {
+                @apply --layout-horizontal;
+                @apply --layout-center-center;
+                height: 40px;
+            }
+
+            label.title {
+                font-size: 16px;
+                font-weight: bold;
+                margin-right: 5px;
+                color: black;
+            }
+
+            label.sub-title {
+                font-size: 14px;
+                vertical-align: bottom;
+                color: #585757;
+            }
+        </style>
+        <div class="header">
+            <label class="title">{{title}}</label>
+            <label class="sub-title">{{sub-title}}</label>
+            <span class="space"></span>
+        </div>
+        <div class="ui divider"></div>
+        <chart-box type="line"></chart-box>
+    </template>
+    <script>
+        Polymer({
+            is: 'dash-1-module',
+            properties: {
+                title: {
+                    type: String
+                },
+                subTitle: {
+                    type: String
+                }
+            },
+            ready() {},
+            attached() {
+                this.async(this.init);
+            },
+            init() {},
+            loadData(e) {}
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,205 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="menu-view">
+    <template>
+        <style include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+            paper-toolbar {
+                background-color: #353d47;
+                /*box-shadow: 0px 2px 5px 0px black;*/
+                position: relative;
+                z-index: 101;
+                /*border-bottom: 1px solid #6d7780;*/
+            }
+
+            .loading {
+                animation: pace-spinner 400ms linear infinite;
+                /*cursor: wait;*/
+                color: yellow;
+            }
+
+            nav:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            nav ul {
+                padding: 0;
+                margin: 0;
+                list-style: none;
+                position: relative;
+            }
+
+            nav ul li {
+                margin: 0px;
+                display: inline-block;
+                float: left;
+                background-color: #353d47;
+            }
+
+            nav a {
+                display: block;
+                padding: 0 10px;
+                color: #E2E2E2;
+                font-size: 14px;
+                line-height: 30px;
+                text-decoration: none;
+            }
+
+            nav a:hover {
+                background-color: white;
+                color: black;
+            }
+
+            nav ul ul {
+                display: none;
+                position: absolute;
+                top: 30px;
+            }
+
+            nav ul li:hover>ul {
+                display: inherit;
+            }
+
+            nav ul ul li {
+                width: 150px;
+                float: none;
+                display: list-item;
+                position: relative;
+            }
+
+            nav ul ul ul li {
+                position: relative;
+                top: -30px;
+                left: 150px;
+            }
+
+            li>a:after {
+                content: ' +';
+            }
+
+            li>a:only-child:after {
+                content: '';
+            }
+
+            label.logo {
+                font-size: 30px;
+                color: white;
+                margin-left: 0px;
+                margin-right: 10px;
+            }
+
+            label.sub_logo {
+                font-size: 16px;
+                color: white;
+                padding-top: 8px;
+            }
+
+            label.login {
+                font-size: 14px;
+                color: #E2E2E2;
+            }
+        </style>
+        <paper-toolbar>
+            <label class="logo">Anyclick AIR</label>
+            <label class="sub_logo">intergrate</label>
+            <span style="width:40px"></span>
+            <nav>
+                <ul>
+                    <li> <a href="#" value="dashboard-view" sub-title="home">실시간현황</a> </li>
+                    <li> <a href="#" value="user-view" sub-title="home">서버관리</a> </li>
+                    <li> <a href="#" value="user-group-view" sub-title="그룹관리">사용자그룹관리</a> </li>
+                    <li> <a href="#" value="config-view" sub-title="home">환경설정</a> </li>
+                    <li> <a href="#" disabled>로그</a>
+                        <ul>
+                            <li> <a href="#" value="admin-log-view" sub-title="로그">관리자로그</a> </li>
+                        </ul>
+                    </li>
+                    <li> <a href="#">통계</a>
+                        <ul>
+                            <li> <a href="#" value="user-summary-view">사용자통계</a> </li>
+                        </ul>
+                    </li>
+                    <li> <a href="#" value="config-view">리포트</a> </li>
+                    <li> <a href="#" value="dom-view">테스트</a> </li>
+                    <li> <a href="#" value="layout-view">테스트2</a> </li>
+                </ul>
+            </nav>
+            <!--
+			<iron-selector id="main_menu" attr-for-selected="value" selected="0" class="layout horizontal" on-iron-select="selectMenu">
+				<paper-button value="config-view" class="green">환경설정</paper-button>
+				<paper-button value="admin-view" class="green">계정관리</paper-button>
+				<paper-button value="map-view" class="green">지도</paper-button>
+				<paper-button value="dom-view" class="green">테스트</paper-button>
+			</iron-selector>
+		-->
+            <span class="space"></span>
+            <label class="login">{{login_id}}</label>
+            <span style="width:20px"></span>
+            <paper-icon-button id="refresh_btn" icon="refresh" on-click="refresh" class="hint--left hint--no-animate big" aria-label="새로고침"></paper-icon-button>
+            <span style="width:5px"></span>
+            <!--
+            <paper-button id="logout_btn" on-click="logout">
+                <iron-icon icon="icons:refresh"></iron-icon>새로고침</paper-button>
+
+            --></paper-toolbar>
+    </template>
+    <script>
+        Polymer({
+            is: 'menu-view',
+            ready() {
+                this.login_id = null;
+            },
+            init() {
+                /*
+                var menu_lst = Polymer.dom(this.$.main_menu).children;
+                for (var i in menu_lst) {
+                	menu_lst[i].toggleAttribute("noink");
+                	if (app.init_view_id == menu_lst[i].getAttribute("value")) {
+                		this.$.main_menu.selectIndex(i);
+                	}
+                }
+                */
+                $('a').click((event) => {
+                    event.preventDefault();
+                    var value = event.target.getAttribute("value");
+                    if(value == undefined) {
+                        app.showAlert("알림", "뷰가 없습니다.");
+                        return;
+                    }
+                    var sub_title = event.target.getAttribute("sub-title");
+                    this.selectMenu(value, event.target.textContent, sub_title);
+                });
+                this.login_id = "Login ID : " + app.login_data.id;
+            },
+            startLoading() {
+                this.$.refresh_btn.classList.add("loading")
+                this.$.refresh_btn.classList.remove("hover")
+            },
+            endLoading() {
+                this.$.refresh_btn.classList.remove("loading")
+            },
+            selectMenu(value, title, sub_title) {
+                if(value == undefined) {
+                    app.showAlert("알림", "선택된 뷰가 없습니다.");
+                    return;
+                }
+                //var value = this.$.main_menu.selectedItem.getAttribute('value');
+                if(value != app.view.current_view_id) {
+                    /*
+                    var menu_lst = Polymer.dom(this.$.main_menu).children;
+                    for (var i in menu_lst) {
+                    	menu_lst[i].toggleAttribute("active", false);
+                    }
+                    this.$.main_menu.selectedItem.toggleAttribute("active", true);
+                    */
+                    app.view.switchView(value, title, sub_title);
+                }
+            },
+            refresh() {
+                app.refresh();
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,4 @@
+#org.springsource.ide.eclipse.gradle.core.preferences.GradleProjectPreferences
+#Thu Mar 16 19:12:29 KST 2017
+build.family.org.gradle.tooling.model.eclipse.HierarchicalEclipseProject=;backend;frontend;
+org.springsource.ide.eclipse.gradle.rootprojectloc=

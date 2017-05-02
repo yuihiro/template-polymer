@@ -1,0 +1,72 @@
+.pika-single {
+    color: black !important;
+}
+
+.pika-single:after {
+    clear: none !important;
+}
+
+.pika-single {
+    *zoom: 0 !important;
+}
+
+.pika-lendar {
+    float: left;
+    width: 260px !important;
+}
+
+.pika-label {
+    background-color: white !important
+}
+
+.pika-button {
+    text-align: center !important;
+    background: white !important;
+}
+
+.is-today .pika-button {
+    color: var(--main-text-color) !important;
+    /*color: black !important;*/
+}
+
+.pika-week {
+    color: var(--app-primary-color) !important;
+    text-decoration: none !important;
+}
+
+.pika-table th {
+    color: var(--main-text-color) !important;
+    line-height: 30px !important;
+}
+
+.pika-single .is-selected .pika-button {
+    color: var(--app-primary-color) !important;
+    box-shadow: none !important;
+    background-color: white !important;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.is-disabled .pika-button {
+    opacity: .3 !important;
+}
+
+.pika-button:hover {
+    color: var(--app-primary-color) !important;
+    background-color: white !important;
+    font-weight: bold !important
+}
+
+.is-startrange .pika-button {
+    color: var(--app-primary-color) !important;
+    background: #6CB31D;
+    box-shadow: none;
+    border-radius: 3px;
+}
+
+.is-endrange .pika-button {
+    color: var(--app-primary-color) !important;
+    background: #33aaff;
+    box-shadow: none;
+    border-radius: 3px;
+}

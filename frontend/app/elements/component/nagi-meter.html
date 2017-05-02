@@ -1,0 +1,91 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-meter">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 100%;
+                height: 100%;
+                padding: 5px;
+            }
+
+            div {
+                border: 1px solid;
+                border-color: #E2E2E2 !important;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+        <div id="el"></div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-meter',
+            properties: {
+                value: {
+                    type: String,
+                    value: '0',
+                    observer: "_valueChange"
+                },
+                barColor: {
+                    type: String,
+                    value: '#bfd255'
+                },
+                bgColor: {
+                    type: String,
+                    value: '#444'
+                },
+                align: {
+                    type: String,
+                    value: "vertical"
+                },
+                width: {
+                    type: String,
+                    value: "20px"
+                }
+            },
+            _valueChange(value) {
+                if(value) {
+                    this.init();
+                    // $(this.selector).jQMeter({
+                    //     raised: '30'
+                    // });
+                }
+            },
+            ready() {
+                this.el = null;
+                var id = "el_" + _.random(0, 100000);
+                this.$.el.id = id;
+                this.selector = "#" + id;
+            },
+            attached() {
+                //this.init();
+            },
+            init() {
+                var option = {
+                    goal: '100',
+                    raised: this.value,
+                    meterOrientation: this.align,
+                    animationSpeed: 200,
+                    counterSpeed: 200,
+                    barColor: this.barColor,
+                    bgColor: this.bgColor,
+                    displayTotal: true
+                };
+                if(this.align == "horizontal") {
+                    option.width = "100%";
+                    option.height = this.width;
+                } else {
+                    option.width = this.width;
+                    option.height = "100%";
+                }
+                this.el = $(this.selector).jQMeter(option);
+            },
+            getValue() {},
+            detached() {
+                if(this.el != null) {
+                    this.el = null;
+                }
+            }
+        });
+    </script>
+    </polymer-element>

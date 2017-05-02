@@ -1,0 +1,154 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="admin-config-pop">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 580px;
+                margin: 0px;
+                /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;*/
+            }
+
+            .content {
+                padding: 10px 10px;
+                height: 480px;
+                background-color: white;
+            }
+
+            nagi-divider {
+                height: 20px;
+            }
+
+            .header {}
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="popup-toolbar">
+                <label class="popup-title">{{title}}</label>
+                <span class="space"></span>
+                <paper-icon-button id="refresh_btn" icon="refresh" on-click="loadData" class="popup-icon-button"></paper-icon-button>
+                <paper-icon-button icon="close" dialog-dismiss class="popup-icon-button"></paper-icon-button>
+            </paper-toolbar>
+            <div class="popup-main">
+                <div class="layout vertical content">
+                    <form class="ui form">
+                        <h5 class="ui dividing header">기본 정보</h5>
+                        <div class="three fields">
+                            <div class="field required">
+                                <label>ID</label>
+                                <input type="text" id="f_id"> </div>
+                            <div class="field">
+                                <label>이름</label>
+                                <input type="text" id="f_name" readonly> </div>
+                            <div class="field required">
+                                <label>Email</label>
+                                <input type="text" id="f_email"> </div>
+                        </div>
+                        <h5 class="ui dividing header">비밀번호</h5>
+                        <div class="three fields">
+                            <div class="field">
+                                <label>기존 비밀번호</label>
+                                <input type="password"> </div>
+                            <div class="field">
+                                <label>새로운 비밀번호</label>
+                                <input type="password"> </div>
+                            <div class="field">
+                                <label>비밀번호 확인</label>
+                                <input type="password"> </div>
+                        </div>
+                        <h5 class="ui dividing header">접속가능IP</h5>
+                        <div class="fields">
+                            <div class="field five wide">
+                                <label>사용여부</label>
+                                <nagi-radio></nagi-radio>
+                                <nagi-space></nagi-space>
+                                <nagi-radio></nagi-radio>
+                            </div>
+                            <div class="field three wide">
+                                <label>IP</label>
+                                <input type="text">
+                                <nagi-space></nagi-space>
+                                <input type="text"> </div>
+                            <div class="field eight wide">
+                                <label>설명</label>
+                                <input type="text">
+                                <nagi-space></nagi-space>
+                                <input type="text"> </div>
+                        </div>
+                    </form>
+                    <div class="ui message scroll">
+                        <div class="header">비밀번호 주의사항</div>
+                        <ul class="list">
+                            <li>변경할 비밀번호는 기존 비밀번호와 같지 않아야 합니다.</li>
+                            <li>비밀번호를 변경하려면 반드시 기존 비밀번호를 정확히 입력하셔야 합니다.</li>
+                            <li>변경할 비밀번호와 비밀번호 확인은 같아야 합니다.</li>
+                            <li>비밀번호는 ID와 동일하게 등록할 수 없습니다.</li>
+                            <li>비밀번호는 6~60자의 영문/숫자 또는 & 을 제외한 특수문자만 가능합니다.</li>
+                            <li>비밀번호는 영문/숫자를 반드시 혼용해야 합니다.</li>
+                            <li>비밀번호의 첫글자는 반드시 영문/숫자 여야 합니다.</li>
+                            <li>비밀번호에 한글/공백 문자는 불가능 합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="popup-footer">
+                <paper-button on-click="save" class="invert" noink>저장</paper-button>
+                <paper-button dialog-dismiss class="invert" noink>취소</paper-button>
+            </div>
+            </div>
+            </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'admin-config-pop',
+        properties: {},
+        behaviors: [
+            Polymer.PaperDialogBehavior
+        ],
+        ready() {
+            app.view.defaultPopup(this);
+            this.title = "괸리자 설정";
+            this.info = {};
+        },
+        attached() {
+            this.init();
+        },
+        init() {
+            this.loadData();
+        },
+        loadData() {
+            axios.post('getAdminConfig').then((res) => {
+                this.parseData(res.data);
+            });
+        },
+        parseData($data) {
+            this.info = $data;
+            FormUtil.setFormData(this, $data);
+            this.open();
+        },
+        save() {
+            var param = FormUtil.getFormData(this);
+            var option = {
+                id: {
+                    length: {
+                        is: 3,
+                        message: "nonono"
+                    }
+                },
+                email: {
+                    email: {
+                        message: "노노"
+                    }
+                }
+            };
+            if(FormUtil.validateData(param, option) == true) {
+                this.applySave(info);
+            }
+        },
+        applySave($data) {
+            var param = $data;
+            axios.post('updateAdminConfig', param).then(function(response) {
+                app.showAlert("알림", "저장되었습니다.");
+            });
+        }
+    });
+</script>

@@ -1,0 +1,71 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-date-box">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                @apply --layout-vertical;
+            }
+        </style>
+        <nagi-date id="start_date" on-select="date_select"></nagi-date>
+        <div style="height:2px"></div>
+        <nagi-date id="end_date" on-select="date_select"></nagi-date>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-date-box',
+            properties: {
+                disabled: {
+                    type: Boolean,
+                    observer: "_disabledChange",
+                    value: false
+                }
+            },
+            _disabledChange(value, old) {
+                if(value == old || old == undefined) {
+                    return;
+                }
+                this.$.start_date.disabled = value;
+                this.$.end_date.disabled = value;
+            },
+            ready() {},
+            attached() {
+                this.async(this.init, 300);
+            },
+            init() {
+                this.date_select(null);
+            },
+            date_select(e) {
+                var start = this.$.start_date.getDate();
+                var end = this.$.end_date.getDate();
+                if(e == null) {
+                    this.$.start_date.setMaxDate(end);
+                    this.$.end_date.setMinDate(start);
+                } else {
+                    if(e.currentTarget.id == "start_date") {
+                        this.$.start_date.setStartRange(start);
+                        this.$.end_date.setStartRange(start);
+                        this.$.end_date.setMinDate(start);
+                    } else {
+                        this.$.start_date.setEndRange(end);
+                        this.$.start_date.setMaxDate(end);
+                        this.$.end_date.setEndRange(end);
+                    }
+                }
+                this.fire("change", {
+                    'start_time': this.$.start_date.getValue(),
+                    'end_time': this.$.end_date.getValue()
+                });
+            },
+            getLabel() {
+                return Uti.getElementId(this);
+            },
+            getValue() {
+                return {
+                    'start_time': this.$.start_date.getValue(),
+                    'end_time': this.$.end_date.getValue()
+                }
+            },
+            detached() {}
+        });
+    </script>
+    </polymer-element>

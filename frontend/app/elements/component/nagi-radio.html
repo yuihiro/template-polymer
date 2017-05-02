@@ -1,0 +1,58 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-radio">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+        </style>
+        <paper-radio-group id="el" selected="true" on-iron-select="_change">
+            <template is="dom-repeat" items="{{data}}">
+                <paper-radio-button name$="{{item.value}}">{{item.label}}</paper-radio-button>
+            </template>
+        </paper-radio-group>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-radio',
+            properties: {
+                data: {
+                    type: Array,
+                    value: [{
+                        label: "사용",
+                        value: "true"
+                    }, {
+                        label: "미사용",
+                        value: "false"
+                    }]
+                },
+                value: {
+                    type: String,
+                    observer: "_valueChange",
+                    value: "true"
+                },
+            },
+            _valueChange(value) {
+                var el = this.$.el;
+                el.select(value + "");
+            },
+            ready() {},
+            attached() {
+                this.init();
+            },
+            init() {},
+            _change(e) {
+                var value = this.$.el.selected;
+                var result = _.find(this.data, {
+                    'value': value
+                });
+                this.fire("change", result);
+            },
+            getLabel() {
+                return Uti.getElementId(this);
+            },
+            getValue() {
+                return this.$.el.selected;
+            },
+            detached() {}
+        });
+    </script>
+    </polymer-element>

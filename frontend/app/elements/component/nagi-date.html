@@ -1,0 +1,124 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-date">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+             :host(:hover) input {
+                border: 1px solid;
+                border-color: #85B7D9 !important;
+            }
+
+            #container {
+                min-width: 115px;
+            }
+
+            #el {
+                width: 115px !important;
+                text-align: center !important;
+                cursor: pointer !important;
+            }
+
+            i {
+                width: 25px !important;
+            }
+        </style>
+        <div class="ui icon input" id="container">
+            <input id="el" readonly></input><i class="bordered calendar icon"></i> </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-date',
+            properties: {
+                value: {
+                    type: String,
+                    observer: "_valueChange",
+                },
+                disabled: {
+                    type: Boolean,
+                    observer: "_disabledChange",
+                    value: false
+                }
+            },
+            _valueChange(value) {
+                if(value && this.el) {
+                    if(value != this.el.toString()) {
+                        this.el.setDate(value);
+                    }
+                }
+            },
+            _disabledChange(value, old) {
+                if(value == old || old == undefined) {
+                    return;
+                }
+                if(value == true) {
+                    this.$.container.classList.add('disabled');
+                } else {
+                    this.$.container.classList.remove('disabled');
+                }
+            },
+            ready() {
+                this.el = null;
+                var id = "el_" + _.random(0, 100000);
+                this.$.el.id = id;
+                this.selector = "#" + id;
+            },
+            attached() {
+                this.init();
+            },
+            init() {
+                var me = this;
+                this.$.el.value = moment().format("YYYY-MM-DD");
+                this.el = new Pikaday({
+                    field: $(this.selector)[0],
+                    onSelect(date) {
+                        me.value = this.toString();
+                        me.fire("change", {
+                            value: this.toString()
+                        })
+                    },
+                    format: 'YYYY-MM-DD',
+                    i18n: {
+                        previousMonth: '이전',
+                        nextMonth: '다음',
+                        months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                        weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                        weekdaysShort: ['일', '월', '화', '수', '목', '금', '토']
+                    },
+                    locale: {
+                        type: String,
+                        value: 'kr'
+                    }
+                    //trigger: button
+                });
+            },
+            setStartRange(value) {
+                this.el.setStartRange(value);
+            },
+            setEndRange(value) {
+                this.el.setEndRange(value);
+            },
+            setMinDate(value) {
+                this.el.setMinDate(value);
+            },
+            setMaxDate(value) {
+                this.el.setMaxDate(value);
+            },
+            getLabel() {
+                return Uti.getElementId(this);
+            },
+            getValue() {
+                if(this.disabled == true) {
+                    return "";
+                }
+                return this.el.toString('YYYY-MM-DD');
+            },
+            getDate() {
+                return this.el.getDate();
+            },
+            detached() {
+                this.el.destroy();
+            }
+        });
+    </script>
+    </polymer-element>

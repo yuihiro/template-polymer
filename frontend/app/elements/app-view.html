@@ -1,0 +1,150 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="app-view">
+    <template>
+        <style include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 100%;
+                height: 100%;
+                --app-toobar-height: 60px;
+                overflow: hidden;
+            }
+
+            #app_container, #main_container {
+                width: 100%;
+                height: 100%;
+                background-color: white;
+            }
+
+            #menu_container {
+                width: 100%;
+                height: var(--app-toobar-height);
+            }
+
+            #popup_container {
+                @apply --layout-horizontal;
+                @apply --layout-center-center;
+            }
+
+            .main {
+                @apply --layout-horizontal;
+                width: 100%;
+                height: calc(100% - 64px);
+            }
+
+            #mask {}
+
+            #mask.show {}
+        </style>
+        <nagi-spinner id="mask"></nagi-spinner>
+        <div id="popup_container"></div>
+        <login-view id="login_view"></login-view>
+        <paper-header-panel id="app_container">
+            <menu-view id="menu_container"></menu-view>
+            <div class="main">
+                <div id="main_container"> </div>
+                <status-view id="status_container"></status-view>
+            </div>
+        </paper-header-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'app-view',
+            factoryImpl() {},
+            ready() {
+                window.app = this;
+                this.app_mode = "normal";
+                this.isStarted = false;
+                if(Util.getHtmlParameter("mode")) {
+                    this.app_mode = Util.getHtmlParameter("mode");
+                }
+                var now = moment().format("YYYY-MM-DD HH:MM:SS");
+                console.log("ready : " + this.app_mode + " / " + now);
+                this.init();
+                this.show();
+                if(this.app_mode == "pass") {
+                    this.start();
+                } else if(this.app_mode == "view") {
+                    Test.view();
+                }
+            },
+            init() {
+                this.$.app_container.style.visibility = "hidden";
+                this.$.login_view.style.visibility = "hidden";
+                this.mask = this.$.mask;
+                this.menu_container = this.$.menu_container;
+                this.status_container = this.$.status_container;
+                this.main_container = this.$.main_container;
+                this.popup_container = this.$.popup_container;
+                this.login_data = {};
+                this.config = new Config();
+                this.data = new CommonData();
+                this.view = new ViewController();
+                this.initEventListener();
+            },
+            initEventListener() {
+                window.addEventListener('resize', () => {
+                    this.view.resize();
+                });
+                this.addEventListener("load_complete", (e) => {
+                    //log.info(e);
+                });
+            },
+            show() {
+                var spinner = document.querySelector('.spinner');
+                this.view.fadeOut(spinner)
+                this.view.fadeIn(this.$.login_view);
+            },
+            start() {
+                this.view.removeElement(this.$.login_view);
+                //this.view.fadeOut(this.$.login_view);
+                var view = this.view.switchView(this.config.init_view_id);
+                this.menu_container.init();
+                this.status_container.init();
+                this.view.fadeIn(this.$.app_container);
+                this.isStarted = true;
+                // this.view.fadeOut(this.$.login_view, () => {
+                //     var view = this.view.switchView(this.config.init_view_id);
+                //     this.$.app_container.style.display = "block";
+                //     this.view.fadeIn(view, () => {
+                //         this.menu_container.init();
+                //         this.status_container.init();
+                //         this.isStarted = true;
+                //     });
+                // });
+            },
+            showAlert($title, $message) {
+                var size = this.getBoundingClientRect();
+                var x = 0;
+                var y = 0;
+                if(size.width != 0) {
+                    x = size.width / 2 - 125;
+                    y = size.height / 2 - 100;
+                } else {
+                    x = window.innerWidth / 2 - 125;
+                    y = window.innerHeight / 2 - 100;
+                }
+                alertify.alert().set({
+                    title: $title,
+                    message: $message
+                }).show().moveTo(x, y);
+            },
+            hideAlert() {
+                alertify.alert().close();
+            },
+            refresh() {
+                this.view.refresh();
+            },
+            logout() {
+                axios.get('logout').then(rep => {
+                    app.showAlert("알림", "로그아웃됩니다.");
+                    app.async(function() {
+                        location.reload(true);
+                    }, 300);
+                });
+            },
+            getSize() {
+                return this.getBoundingClientRect();
+            }
+        });
+    </script>
+</dom-module>

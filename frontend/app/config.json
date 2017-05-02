@@ -1,0 +1,7 @@
+{
+    "ajax_url": "http://localhost:9000/api",
+    "ajax_timeout": 20000,
+    "ajax_after_delay": 50000,
+    "init_view_id": "config_view",
+    "log_level": "info"
+}

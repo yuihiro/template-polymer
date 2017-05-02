@@ -1,0 +1,125 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="admin-info-pop">
+    <template>
+        <style include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 300px;
+                margin: 0px;
+                background-color: black;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+            }
+
+            .content {
+                padding: 5px 10px;
+                height: 100%;
+                background-color: white;
+            }
+
+            .footer {
+                padding: 0px;
+                background-color: #fafafa;
+                border-top: #eee 1px solid;
+            }
+
+            paper-input {
+                margin-right: 5px;
+            }
+
+            paper-input:last-child {
+                margin-right: 0px;
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <label class="view-title">계정정보</label>
+                <span class="space"></span>
+                <paper-icon-button icon="refresh" on-click="loadData"></paper-icon-button>
+                <paper-icon-button icon="close" dialog-dismiss></paper-icon-button>
+            </paper-toolbar>
+            <div>
+                <div class="layout vertical content">
+                    <div class="layout horizontal">
+                        <paper-input label="아이디" readonly always-float-label value="{{info.id}}"></paper-input>
+                        <paper-input label="이름" readonly always-float-label value="{{info.name}}"></paper-input>
+                    </div>
+                    <div class="layout horizontal">
+                        <paper-input label="레벨" always-float-label value="{{info.level}}"></paper-input>
+                        <paper-input label="상태" always-float-label value="{{info.status}}"></paper-input>
+                    </div>
+                    <div class="layout horizontal">
+                        <paper-input label="타입" always-float-label value="{{info.type}}"></paper-input>
+                        <paper-input label="생성시간" always-float-label value="{{info.create_time}}"></paper-input>
+                    </div>
+                </div>
+                <div class="layout horizontal end-justified center footer" style="height:40px">
+                    <paper-button>설정</paper-button>
+                </div>
+            </div>
+    </template>
+</dom-module>
+<script>
+    (function() {
+        Polymer({
+            is: 'admin-info-pop',
+            properties: {
+                width: {
+                    type: Number,
+                    value: 200,
+                    notify: true
+                },
+                height: {
+                    type: Number,
+                    value: 200,
+                    notify: true
+                }
+            },
+            behaviors: [
+                Polymer.PaperDialogBehavior
+            ],
+            ready() {
+                //this.autoFitOnAttach = true;
+                this.info = {};
+                this.alwaysOnTop = false;
+                this.modal = true;
+                this.canceled = true;
+                this.noCancelOnOutsideClick = false;
+                this.noCancelOnEscKey = false;
+                this.user_id = null;
+                var me = this;
+                this.setAttribute("id", this.localName);
+                /*
+                this.addEventListener("iron-overlay-closed", function(e) {
+                	app.view.removePop(this);
+                });
+                */
+            },
+            attached() {
+                //this.customStyle['width'] = '800px';
+                //this.updateStyles();
+            },
+            /*
+            computeStyle() {
+            	log.info("computeStyle");
+            	return 'width:' + this.width + 'px;height:' + this.height + "px";
+            },
+            */
+            init($id) {
+                this.user_id = $id;
+                this.loadData();
+            },
+            loadData() {
+                var me = this;
+                var param = {
+                    id: this.user_id
+                }
+                axios.post('getUserInfo', param).then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                this.info = $data;
+                this.open();
+            }
+        });
+    })();
+</script>

@@ -1,0 +1,76 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-time">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+             :host(:hover) input {
+                border: 1px solid;
+                border-color: #85B7D9 !important;
+            }
+
+            #container {
+                min-width: 105px;
+            }
+
+            #el {
+                width: 105px !important;
+                text-align: center;
+                cursor: pointer !important;
+            }
+
+            i {
+                width: 25px !important;
+            }
+        </style>
+        <div class="ui icon input" id="container">
+            <input id="el"></input><i class="bordered hourglass start icon"></i> </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-time',
+            properties: {
+                value: {
+                    type: String,
+                    observer: "_valueChange"
+                }
+            },
+            _valueChange(value) {
+                if(value && this.el) {
+                    if(value != this.$.el.value) {
+                        var date = moment(value, "HH:mm A").toDate();
+                        $(this.selector).timepicker('setTime', date);
+                    }
+                }
+            },
+            ready() {
+                this.el = null;
+                var id = "el_" + _.random(0, 100000);
+                this.$.el.id = id;
+                this.selector = "#" + id;
+            },
+            attached() {
+                this.init();
+            },
+            init() {
+                var me = this;
+                this.el = $(this.selector).timepicker({
+                    disableTextInput: true,
+                    timeFormat: 'A h:i '
+                });
+                this.el.on('changeTime', function() {
+                    me.value = $(this).val();
+                    me.fire("change", $(this).val());
+                });
+                $(this.selector).timepicker('setTime', moment("A 12:00 ", "A HH:mm").toDate());
+            },
+            getLabel() {
+                return Uti.getElementId(this);
+            },
+            getValue() {
+                return $(this.el).val();
+            },
+            detached() {}
+        });
+    </script>
+    </polymer-element>

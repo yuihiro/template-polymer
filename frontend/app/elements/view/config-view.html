@@ -1,0 +1,590 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="config-view">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {}
+
+            .label {
+                font-weight: 600;
+                margin-right: 10px;
+                color: #464d55;
+            }
+
+            .content {
+                @apply --layout-vertical;
+                @apply --layout-flex;
+                padding: 0px 5px 5px 5px;
+            }
+
+            nagi-divider {
+                width: 50px;
+                height: 30px;
+            }
+
+            .main {
+                @apply --layout-vertical;
+                @apply --layout-flex;
+                background-color: #F9F9F9;
+            }
+
+            .repeat:not(:last-of-type) {
+                margin-bottom: 10px;
+            }
+        </style>
+        <paper-header-panel>
+            <paper-toolbar class="view-toolbar">
+                <label>[[subTitle]]</label>
+                <span class="divider">/</span>
+                <label class="view-title">[[title]]</label>
+                <span class="flex"></span>
+                <div class="view-toolbar-content">
+                    <paper-button id="admin_btn" on-click="popupAdminConfig">관리자설정</paper-button>
+                    <paper-icon-button icon="icons:save" id="btn" on-click="save" class="hint--left hint--no-animate big" aria-label="저장"></paper-icon-button>
+                    <span style="width:5px"></span>
+                </div>
+            </paper-toolbar>
+            <div class="layout vertical view-main">
+                <paper-tabs selected="{{tab_idx}}" on-iron-select="selectTab" noink>
+                    <paper-tab>시스템 설정</paper-tab>
+                    <paper-tab>서버 설정</paper-tab>
+                    <paper-tab>로그 설정</paper-tab>
+                    <paper-tab>로그 Aging 설정</paper-tab>
+                    <paper-tab>DB 설정</paper-tab>
+                    <paper-tab>인증 설정</paper-tab>
+                    <paper-tab>외부연동 설정</paper-tab>
+                    <paper-tab>기타 설정</paper-tab>
+                </paper-tabs>
+                <iron-pages selected="{{tab_idx}}" class="content">
+                    <div class="main scroll" role="tab_view">
+                        <config-box title="시스템" sub-title="SYSTEM"> <i class="fa fa-pencil" title="Edit"></i>
+                            <div>
+                                <span class="label">ProductID</span>
+                                <label id="f_product_id"> </label>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">자동로그아웃</span>
+                                <nagi-select id="logout_cb" data$=[[logout_data]]></nagi-select>
+                            </div>
+                        </config-box>
+                        <config-box title="디스크" sub-title="DISK">
+                            <div>
+                                <span class="label">디스크사용 알림임계치</span>
+                                <div class="ui right labeled input">
+                                    <input type="text" id="f_max_disc_quotas_alarm">
+                                    <div class="ui basic label">%</div>
+                                </div>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">디스크사용 최대임계치</span>
+                                <div class="ui right labeled input">
+                                    <input type="text" id="f_max_disc_quotas">
+                                    <div class="ui basic label">%</div>
+                                </div>
+                            </div>
+                        </config-box>
+                        <config-box title="사용시간 제한" sub-title="DISK">
+                            <span class="label">사용여부</span>
+                            <nagi-check></nagi-check>
+                        </config-box>
+                        <config-box title="계정" sub-title="ACCOUNT">
+                            <div>
+                                <span class="label">휴면계정 결정기간</span>
+                                <div class="ui right labeled input">
+                                    <input type="text" id="f_invalidity_day">
+                                    <div class="ui basic label">일</div>
+                                </div>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">비밀번호 유효기간</span>
+                                <div class="ui right labeled input">
+                                    <input type="text" id="f_pwd_life_time">
+                                    <div class="ui basic label">일</div>
+                                </div>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">비밀번호 오류허가</span>
+                                <div class="ui right labeled input">
+                                    <input type="text" id="f_pwd_clipping_limit">
+                                    <div class="ui basic label">회</div>
+                                </div>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">일배치시 인사정보동기화</span>
+                                <paper-checkbox checked></paper-checkbox>
+                            </div>
+                        </config-box>
+                    </div>
+                    <div class="main scroll" role="tab_view">
+                        <config-box title="인증 서버" sub-title="SERVER">
+                            <div>
+                                <span class="label">인증서버 Port</span>
+                                <input type="text"> </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">과금서버 Port</span>
+                                <input type="text"> </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">재인증 주기</span>
+                                <div class="ui right labeled input">
+                                    <input type="text" id="f_max_disc_quotas">
+                                    <div class="ui basic label">초</div>
+                                </div>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">동시처리 세션</span>
+                                <div class="ui right labeled input">
+                                    <input type="text" id="f_max_disc_quotas">
+                                    <div class="ui basic label">개</div>
+                                </div>
+                            </div>
+                        </config-box>
+                        <config-box title="SNMP" sub-title="EMAIL">
+                            <div>
+                                <span class="label">릴레이서버</span>
+                                <input type="text" id="f_relay_host" style="width:150px"> </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">승인요청 관리자 메일송신</span>
+                                <nagi-check id="f_email_on_request"></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">승인결과 사용자 메일송신</span>
+                                <nagi-check id="f_email_on_response"></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="NTP" sub-title="NTP">
+                            <div>
+                                <span class="label">NTP 서버주소</span>
+                                <input type="text" style="width:200px" placeholder="time.bora.net"> </div>
+                        </config-box>
+                        <config-box title="DHCP" sub-title="DHCP">
+                            <div>
+                                <span class="label">DHCP 강제적용</span>
+                                <nagi-check id="f_force_dhcp"></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">Listen Port</span>
+                                <input type="text"> </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">Response Port</span>
+                                <input type="text"> </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">Log Level</span>
+                                <nagi-select id="log_cb" data$=[[log_data]]></nagi-select>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">DB 커넥션풀</span>
+                                <div class="ui right labeled input">
+                                    <input type="text">
+                                    <div class="ui basic label">개</div>
+                                </div>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">RELEASE 수신시 임대정보 삭제</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="HA" sub-title="HA">
+                            <div class="layout vertical repeat">
+                                <template is="dom-repeat" items="{{ha_data}}">
+                                    <div class="layout horizontal center repeat" style="width:100%">
+                                        <span class="label">-</span>
+                                        <span class="label">HostName</span>
+                                        <input type="text" value$={{item.ha_system_name}} style="width:150px">
+                                        <nagi-divider align="v"></nagi-divider>
+                                        <span class="label">IP</span>
+                                        <input type="text" value$={{item.ha_system_ip}} style="width:150px"> </div>
+                                </template>
+                            </div>
+                        </config-box>
+                    </div>
+                    <div class="main scroll" role="tab_view">
+                        <config-box title="사용자인증 로그" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check id="auth_log" value="true"></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">타겟</span>
+                                <nagi-select id="target_cb" data$=[[target_data]]></nagi-select>
+                            </div>
+                        </config-box>
+                        <config-box title="과금 로그" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="인증서버 로그" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">LOG LEVEL</span>
+                                <nagi-select id="log_cb" data$=[[log_data]]></nagi-select>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">SYSLOG로 저장</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                    </div>
+                    <div role="tab_view">
+                        <config-box title="인증서버 로그" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">보관기간</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">일</div>
+                            </div>
+                        </config-box>
+                        <config-box title="접속 로그" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">보관기간</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">일</div>
+                            </div>
+                        </config-box>
+                        <config-box title="사용자인증 로그" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">보관기간</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">일</div>
+                            </div>
+                        </config-box>
+                        <config-box title="DHCP서버 로그" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">보관기간</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">일</div>
+                            </div>
+                        </config-box>
+                        <config-box title="접속사용자 내역" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">보관기간</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">일</div>
+                            </div>
+                        </config-box>
+                        <config-box title="DHCP할당 로그" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">보관기간</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">일</div>
+                            </div>
+                        </config-box>
+                    </div>
+                    <div role="tab_view">
+                        <config-box title="DB백업 설정" sub-title="SERVER">
+                            <div>
+                                <span class="label">전체백업주기</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="DB백업/복원리스크 설정" sub-title="SERVER">
+                            <div>
+                                <span class="label">CSV 목록수</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="DB 백업" sub-title="SERVER">
+                            <div>
+                                <span class="label">CSV 목록수</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="DB 복원" sub-title="SERVER">
+                            <div>
+                                <span class="label">CSV 목록수</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="CSV 일괄등록" sub-title="SERVER">
+                            <div>
+                                <span class="label">CSV 목록수</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                    </div>
+                    <div role="tab_view">
+                        <config-box title="일반" sub-title="SERVER">
+                            <div>
+                                <span class="label">익명이름</span>
+                                <input type="text"> </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">Mac 주소 체크</span>
+                                <input type="text"> </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">Radius 인증허용</span>
+                                <nagi-check label="PAP"></nagi-check>
+                                <nagi-check label="CHAP"></nagi-check>
+                                <nagi-check label="MA-CHAP"> </nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="EAP 인증" sub-title="SERVER">
+                            <div>
+                                <span class="label">허용 인증</span>
+                                <nagi-check label="PAP"></nagi-check>
+                                <nagi-check label="CHAP"></nagi-check>
+                                <nagi-check label="MA-CHAP"> </nagi-check>
+                            </div>
+                        </config-box>
+                    </div>
+                    <div role="tab_view">
+                        <config-box title="외부사용자 DB" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="인사시스템" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                        </config-box>
+                        <config-box title="Radius Proxy" sub-title="SERVER">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">Retry Delay</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">초</div>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">Retry Count</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">번</div>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <span class="label">Dead Time</span>
+                            <div class="ui right labeled input">
+                                <input type="text" id="f_max_disc_quotas">
+                                <div class="ui basic label">초</div>
+                            </div>
+                        </config-box>
+                    </div>
+                    <div role="tab_view">
+                        <config-box title="계정자동승인">
+                            <div>
+                                <span class="label">계정신청 자동승인</span>
+                                <paper-checkbox checked id="f_auto_user_apply"></paper-checkbox>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">계정정지 자동승인</span>
+                                <paper-checkbox checked id="f_auto_user_stop"></paper-checkbox>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">계정탈퇴 자동승인</span>
+                                <paper-checkbox checked id="f_auto_user_quit"></paper-checkbox>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">탈퇴계정정보 보관기간</span>
+                                <div class="ui right labeled input">
+                                    <input type="text" id="f_user_quitinfo_limit">
+                                    <div class="ui basic label">일</div>
+                                </div>
+                            </div>
+                        </config-box>
+                        <config-box title="자동일괄정리">
+                            <div>
+                                <span class="label">사용여부</span>
+                                <nagi-check id="f_apply_auto_backup"></nagi-check>
+                            </div>
+                            <nagi-divider align="v"></nagi-divider>
+                            <div>
+                                <span class="label">시간</span>
+                                <nagi-select id="f_auto_backup_time" data$=[[time_data]]></nagi-select>
+                            </div>
+                        </config-box>
+                    </div>
+                    <div role="tab_view">
+                        <h4 class="ui horizontal divider header"> <i class="tag icon"></i> Description </h4>
+                        <p>Doggie treats are good for all times of the year. Proven to be eaten by 99.9% of all dogs worldwide.</p>
+                        <h4 class="ui horizontal divider header"> <i class="bar chart icon"></i> Specifications </h4>
+                        <table class="ui definition table">
+                            <tbody>
+                                <tr>
+                                    <td class="two wide column">Size</td>
+                                    <td>1" x 2"</td>
+                                </tr>
+                                <tr>
+                                    <td>Weight</td>
+                                    <td>6 ounces</td>
+                                </tr>
+                                <tr>
+                                    <td>Color</td>
+                                    <td>Yellowish</td>
+                                </tr>
+                                <tr>
+                                    <td>Odor</td>
+                                    <td>Not Much Usually</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <input id="file" type="file" class="form-control" />
+                        <paper-button noink on-click="upload">파일업로드</paper-button>
+                        <paper-button noink on-click="download">파일다운로드</paper-button>
+                        <iron-list items="{{data}}">
+                            <template>
+                                <div> Name: {{item.label}} </div>
+                            </template>
+                        </iron-list>
+                        <tree-node></tree-node>
+                    </div>
+                </iron-pages>
+        </paper-header-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'config-view',
+            properties: {
+                title: {
+                    type: String
+                },
+                subTitle: {
+                    type: String
+                }
+            },
+            ready() {
+                this.tab_idx = 0;
+                this.tab_status_list = [];
+                this.logout_data = _.concat(app.data.logout_type_lst);
+                this.time_data = _.concat(app.data.time_lst);
+                this.log_data = _.concat(app.data.log_level_lst);
+                this.target_data = _.concat(app.data.log_target_lst);
+                this.config_info = {};
+                this.ha_data = [];
+                // this.addEventListener("save", function(e) {
+                // 	app.showAlert("알림", "저장되었습니다");
+                // 	log.info(e.detail);
+                // });
+            },
+            attached() {
+                this.refresh();
+            },
+            refresh() {
+                this.tab_status_list = [false, false, false];
+                this.loadData();
+            },
+            loadData() {
+                var me = this;
+                axios.post('getConfig', null).then(function(response) {
+                    me.parseData(response.data);
+                });
+            },
+            parseData($data) {
+                var me = this;
+                this.config_info = _.mapValues($data, function(value, key) {
+                    if(!_.isObject(value)) {
+                        return _.split(value, "|")[0];
+                    } else {
+                        return value;
+                    }
+                });
+                this.ha_data = this.config_info.ha_lst;
+                log.info(this.ha_data);
+                FormUtil.setFormData(this, this.config_info);
+                app.dispatchEvent(new Event("load_complete", {
+                    detail: {}
+                }));
+            },
+            selectItem(e) {
+                //log.info(e.detail.item);
+            },
+            selectTab(e) {
+                log.info(this.tab_idx);
+                if(this.tab_idx == 1) {
+                    if(this.tab_status_list[this.tab_idx] == false) {}
+                } else if(this.tab_idx == 3) {}
+                this.tab_status_list[this.tab_idx] = true;
+            },
+            save() {
+                log.info(this.$.combo.getSelectData());
+            },
+            popupAdminConfig() {
+                var popup = app.view.createPopup("admin-config-pop");
+                log.info(popup);
+            },
+            upload() {
+                var data = new FormData();
+                data.append('foo', 'bar');
+                data.append('file', document.getElementById('file').files[0]);
+                var config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    onUploadProgress(progressEvent) {
+                        var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    }
+                };
+                axios.post('upload', data, config).then(function(res) {
+                    log.info(res);
+                }).catch(function(err) {});
+            },
+            download() {
+                var param = {
+                    'filename': "aaa.txt"
+                };
+                axios.post('download', param).then(function(res) {
+                    log.info(res);
+                }).catch(function(err) {});
+            }
+        });
+    </script>
+</dom-module>

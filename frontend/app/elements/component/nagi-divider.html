@@ -1,0 +1,83 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-divider">
+    <template>
+        <style>
+             :host {
+                /*background-color: var(--divider-background-color, #FFF);*/
+                @apply --layout-horizontal;
+                @apply --layout-center-center;
+                width: var(--divider-container-width, 100%);
+                height: var(--divider-container-height, 20px);
+            }
+
+             :host([align=h]) {
+                padding-top: 0px;
+                padding-bottom: 0px;
+                padding-left: var(--divider-padding);
+                padding-right: var(--divider-padding);
+            }
+
+             :host([align=v]) {
+                padding-top: var(--divider-padding);
+                padding-bottom: var(--divider-padding);
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+
+            div {
+                background-color: var(--divider-color, #000);
+                opacity: var(--divider-opacity, 0.2);
+            }
+
+            .vdivider {
+                width: var(--divider-width, 1px);
+                height: 100%;
+            }
+
+            .hdivider {
+                width: 100%;
+                height: var(--divider-width, 1px);
+            }
+        </style>
+        <div id="divider" class$="[[_computeClass(align, padding, color, backgroundColor)]]"></div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-divider',
+            properties: {
+                align: {
+                    type: String,
+                    value: "h"
+                },
+                padding: {
+                    type: String,
+                    value: "5px"
+                },
+                color: {
+                    type: String,
+                    value: "#000"
+                },
+                backgroundColor: {
+                    type: String,
+                    value: "#FFF"
+                }
+            },
+            _computeClass($align, $padding, $color, $backgroundColor) {
+                this.customStyle['--divider-padding'] = $padding;
+                this.customStyle['--divider-color'] = $color;
+                this.customStyle['--divider-background-color'] = $backgroundColor;
+                if($align == "h") {
+                    this.customStyle['--divider-container-width'] = "100%";
+                    this.customStyle['--divider-container-height'] = "20px";
+                    this.updateStyles();
+                    return "hdivider";
+                } else {
+                    this.customStyle['--divider-container-width'] = "30px";
+                    this.customStyle['--divider-container-height'] = "100%";
+                    this.updateStyles();
+                    return "vdivider";
+                }
+            }
+        });
+    </script>
+</dom-module>

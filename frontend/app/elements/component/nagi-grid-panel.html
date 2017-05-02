@@ -1,0 +1,180 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-grid-panel">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                padding: 8px 10px 5px 10px;
+                width: 100%;
+                height: 100%;
+            }
+
+            nagi-panel {
+                padding: 0;
+            }
+
+            .module_main {
+                padding-right: 5px;
+            }
+        </style>
+        <!--<div id="details" class="userdetails" style="display: -webkit-flex; display: flex; height: 100px;">
+            <div class="usercolumn"> <small>Name</small>
+                <div class="userdata">[[item.ip]]</div> <small>Surname</small>
+                <div class="userdata">[[item.name]]</div> <small>Title</small>
+                <div class="userdata">Designer</div> <small>Hire date</small>
+                <div class="userdata">10th August 2015</div>
+            </div>
+            <div class="usercolumn"> <small>City</small>
+                <div class="userdata">[[item.ip]]</div> <small>Street</small>
+                <div class="userdata">[[item.name]]</div> <small>Phone</small>
+                <div class="userdata">[[item.phone]]</div>
+                <div style="display: -webkit-flex; display: flex;">
+                    <button class="demo-button">MESSAGE</button>
+                    <button class="demo-button whitebutton">EDIT</button>
+                </div>
+            </div>
+        </div>-->
+        <nagi-panel title="[[title]]" sub-title="[[subTitle]]">
+            <div class="module_header">
+                <nagi-paging-box id="paging_box" limit="100" on-page="_page"></nagi-paging-box>
+            </div>
+            <div class="module_main">
+                <vaadin-grid id='grid' class='themed' selection-mode="multi">
+                    <table>
+                        <colgroup>
+                            <template is="dom-repeat" items="{{column_data}}">
+                                <col name$="{{item.value}}" width$="{{item.width}}" sortable> </template>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <template is="dom-repeat" items="{{column_data}}">
+                                    <th>{{item.label}}</th>
+                                </template>
+                            </tr>
+                        </thead>
+                    </table>
+                </vaadin-grid>
+            </div>
+        </nagi-panel>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-grid-panel',
+            properties: {
+                title: {
+                    type: String
+                },
+                subTitle: {
+                    type: String
+                },
+                selectMode: {
+                    type: String,
+                    value: "single"
+                },
+                noPaging: {
+                    type: Boolean
+                }
+            },
+            ready() {
+                this.created = false;
+                this.$.grid.selection.mode = this.selectMode;
+                this.column_data = [];
+                if(this.noPaging) {
+                    this.$.paging_box.style.display = "none";
+                }
+                // var details = this.$.details;
+                // details.parentNode.removeChild(details);
+                // this.$.grid.rowDetailsGenerator = function(rowIndex) {
+                //     this.$.grid.getItem(rowIndex, function(error, item) {
+                //         if(!error) {
+                //             this.item = item;
+                //         }
+                //     }.bind(this));
+                //     return details;
+                // }.bind(this);
+                // this.$.grid.addEventListener('selected-items-changed', function() {
+                //     this.$.grid.setRowDetailsVisible(this._opened || 0, false);
+                //     var selected = grid.selection.selected();
+                //     if(selected.length == 1) {
+                //         this.$.grid.setRowDetailsVisible(selected[0], true);
+                //         this._opened = selected[0];
+                //     }
+                // }.bind(this));
+            },
+            attached() {},
+            init(option) {
+                if(option.column) {
+                    this.column_data = option.column;
+                }
+                if(option.renderer) {
+                    this.setGridRenderer(option.renderer);
+                }
+                this.$.grid.addEventListener('selected-items-changed', () => {
+                    if(this.created == false) {
+                        return;
+                    }
+                    var result = {};
+                    var selected = this.$.grid.selection.selected((idx) => {
+                        this.$.grid.items[idx].idx = idx.a;
+                        result = this.$.grid.items[idx];
+                    });
+                    this.fire("select", result);
+                });
+                //this.$.grid.columns = this.column_data;
+                // _.each(this.column_data, (item) => {
+                //     // this.$.grid.addColumn({
+                //     //     name: item.value,
+                //     //     width: item.width
+                //     // });
+                //     // var node = document.createElement('th');
+                //     // node.textContent = item.label;
+                //     // log.info(node);
+                // });
+            },
+            initPaging(data) {
+                this.$.paging_box.init(data);
+            },
+            draw(data) {
+                this.$.grid.items = data;
+                this.$.grid.scrollToStart();
+                this.created = true;
+            },
+            setGridRenderer(data) {
+                var columns = this.$.grid.columns;
+                _.delay((data) => {
+                    _.each(columns, function(column) {
+                        if(data[column.name]) {
+                            column.renderer = data[column.name];
+                        }
+                    });
+                }, 300, data);
+            },
+            getPageValue() {
+                return {
+                    offset: this.$.paging_box.offset,
+                    limit: this.$.paging_box.limit
+                }
+            },
+            getGrid() {
+                return this.$.grid;
+            },
+            getSelectList() {
+                var result = [];
+                var selected = this.$.grid.selection.selected((idx) => {
+                    this.$.grid.items[idx].idx = idx.a;
+                    result.push(this.$.grid.items[idx]);
+                });
+                return result;
+            },
+            select(idx) {
+                if(idx) {
+                    this.$.grid.selection.select(idx);
+                } else {
+                    this.$.grid.selection.clear();
+                }
+            },
+            _page(e) {
+                this.fire("page", this.getPageValue);
+            }
+        });
+    </script>
+    </polymer-element>
