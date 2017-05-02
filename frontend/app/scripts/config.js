@@ -124,9 +124,13 @@ class Config {
         if(window.location.port === '') { // if production
             page.base(this.base_url.replace(/\/$/, ''));
         }
-        page(this.base_url, function() {});
-        page('*', function() {
-            page.redirect(base_url);
+        page(this.base_url, () => {});
+        page('*', () => {
+            if(this.base_url) {
+                page.redirect(this.base_url);
+            } else {
+                page.redirect("/");
+            }
             // app.showAlert("에러", "잘못된 경로입니다.");
             // TweenLite.delayedCall(0.5, function() {
             //     page.redirect(app.base_url);
