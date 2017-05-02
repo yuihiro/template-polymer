@@ -97,24 +97,12 @@
             ],
             ready() {
                 log.info("ready");
+                app.view.defaultPopup(this);
                 this.title = "서버 추가"
-                this.addEventListener('iron-overlay-opened', function() {
-                    log.info("헉");
-                    //this.backdropElement.style.zIndex = Number(this.style.zIndex) - 1;
-                });
-                //this.autoFitOnAttach = true;
                 this.info = {
                     id: "서울지부",
                     name: "서울지부"
                 };
-                //app.view.defaultPopup(this);
-                var me = this;
-                this.setAttribute("id", this.localName);
-                /*
-                this.addEventListener("iron-overlay-closed", function(e) {
-                	app.view.removePop(this);
-                });
-                */
             },
             attached() {
                 log.info("attached");
@@ -123,7 +111,6 @@
             },
             detached() {},
             init() {
-                log.info("init");
                 this.$.map.style.opacity = 0;
                 this.createMap();
                 this.initMap();
