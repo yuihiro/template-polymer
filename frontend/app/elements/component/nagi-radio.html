@@ -2,7 +2,9 @@
 <dom-module id="nagi-radio">
     <template>
         <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
-             :host {}
+             :host {
+                height: 30px;
+            }
         </style>
         <paper-radio-group id="el" selected="true" on-iron-select="_change">
             <template is="dom-repeat" items="{{data}}">

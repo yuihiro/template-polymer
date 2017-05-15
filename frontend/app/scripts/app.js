@@ -21,7 +21,12 @@
             loadComplete();
         } else {
             link.addEventListener('load', loadComplete);
+            link.addEventListener('error', loadError);
         }
+    }
+
+    function loadError() {
+        alert.show("서버에 접속할 수 없습니다.");
     }
 
     function loadComplete() {

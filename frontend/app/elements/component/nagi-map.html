@@ -1,0 +1,196 @@
+<link rel="import" templateUrl="package:bower_components/polymer/polymer.html">
+<dom-module id="nagi-map">
+    <template>
+        <style is="custom-style" include="shared-styles iron-flex iron-flex-alignment">
+             :host {
+                width: 100px;
+                height: 100px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            #map {
+                width: 100%;
+                height: inherit;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .custom_typecontrol {
+                width: 200px;
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                z-index: 100;
+            }
+
+            input {
+                width: 150px;
+                height: 35px;
+                opacity: 0.8;
+            }
+        </style>
+        <div class="custom_typecontrol">
+            <div class="ui icon input">
+                <input type="text" id="search_txt" placeholder="주소 입력"> <i class="circular search link icon" on-click="searchMap"></i> </div>
+        </div>
+        <div id="map"></div>
+    </template>
+    <script>
+        Polymer({
+            is: 'nagi-map',
+            properties: {
+                mode: {
+                    type: String,
+                    default: "only"
+                },
+                data: {
+                    type: Array
+                }
+            },
+            ready() {
+                this.map = null;
+                this.bounds = null;
+                this.marker = null;
+            },
+            attached() {
+                this.$.map.style.opacity = 0;
+                this.async(this.init, 300);
+            },
+            init() {
+                this.bounds = new daum.maps.LatLngBounds();
+                var container = this.$.map;
+                var options = {
+                    center: new daum.maps.LatLng(33.449866588094956, 126.56671811438332),
+                    level: 3
+                };
+                this.map = new daum.maps.Map(container, options);
+                if(navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        var lat = pos.coords.latitude;
+                        var lon = pos.coords.longitude;
+                        var position = new daum.maps.LatLng(lat, lon);
+                        this.map.setCenter(position);
+                        this.onlyMarker();
+                    }, null, {
+                        enableHighAccuracy: true
+                    });
+                }
+                TweenMax.to(this.$.map, 0.5, {
+                    opacity: 1,
+                    delay: 0.3,
+                    onComplete() {
+                        //me.removeElement($element);
+                    }
+                });
+            },
+            getGeoLocation() {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    var lat = pos.coords.latitude;
+                    var lon = pos.coords.longitude;
+                    var position = new daum.maps.LatLng(lat, lon);
+                    return position;
+                }, null, {
+                    enableHighAccuracy: true
+                });
+            },
+            onlyMarker() {
+                var marker = new daum.maps.Marker({
+                    position: this.map.getCenter()
+                });
+                var info = this.createInfo("여기");
+                marker.setMap(this.map);
+                daum.maps.event.addListener(this.map, 'click', (e) => {
+                    var latlng = e.latLng;
+                    log.info(latlng.getLat() + "/" + latlng.getLng());
+                    marker.setPosition(latlng);
+                });
+                this.marker = marker;
+            },
+            createMarker(data) {
+                this.data = data;
+                var me = this;
+                _.each(this.data, (item) => {
+                    if(item.x) {
+                        var pos = new daum.maps.LatLng(item.x, item.y);
+                        this.bounds.extend(pos);
+                        var marker = new daum.maps.Marker({
+                            position: pos,
+                            title: item.name,
+                            //image: markerImage, // 마커이미지 설정 
+                            map: this.map,
+                            clickable: true
+                        });
+                        (function(map, marker) {
+                            daum.maps.event.addListener(marker, 'click', () => {
+                                me.fire("marker-click".marker);
+                                // console.log(marker.getPosition());
+                                // map.setLevel(4);
+                                // map.setCenter(marker.getPosition());
+                            });
+                        })(this.map, marker);
+                    }
+                });
+            },
+            createInfo(name) {
+                var content = '<div style="width:150px;text-align:center;padding:6px 0;">' + name + '</div>';
+                var info = new daum.maps.InfoWindow({
+                    content: content
+                });
+                return info;
+            },
+            createOverlay(pos) {
+                var content = '<div class ="label"><span class="left"></span><span class="center">카카오!</span><span class="right"></span></div>';
+                var overlay = new daum.maps.CustomOverlay({
+                    position: pos,
+                    content: content
+                });
+                return overlay;
+            },
+            setBounds() {
+                this.map.setBounds(this.bounds);
+            },
+            getPosByAddress(address, callback) {
+                var geocoder = new daum.maps.services.Geocoder();
+                geocoder.addr2coord(address, function(status, result) {
+                    if(status === daum.maps.services.Status.OK) {
+                        var pos = new daum.maps.LatLng(result.addr[0].lat, result.addr[0].lng);
+                        log.info(result.places);
+                        callback.call(this, pos);
+                    } else {
+                        callback.call(this, null);
+                    }
+                });
+            },
+            getAddressByPos(pos, callback) {
+                var geocoder = new daum.maps.services.Geocoder();
+                geocoder.coord2addr(pos, function(status, result) {
+                    if(status === daum.maps.services.Status.OK) {
+                        var address = result.roadAddress.name;
+                        log.info(address);
+                        callback.call(this, address);
+                    } else {
+                        callback.call(this, null);
+                    }
+                });
+            },
+            setMarkerPos(pos) {
+                this.map.setCenter(pos);
+                this.marker.setPosition(pos);
+            },
+            getMarkerPos() {
+                return this.marker.getPosition();
+            },
+            searchMap() {
+                this.getPosByAddress(this.$.search_txt.value, (result) => {
+                    log.info(result);
+                    if(result == null) {
+                        app.showAlert("알림", "다시 검색하세요.");
+                        return;
+                    }
+                    this.setMarkerPos(result);
+                });
+            },
+        });
+    </script>
+    </polymer-element>

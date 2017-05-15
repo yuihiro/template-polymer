@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 ext {
 	debug=true
-	appName="aus"
+	appName="anyclick_air"
 	appVersion="0.1.0"
 	distDir="dist/"
 	frontDir="frontend"
@@ -24,7 +24,7 @@ buildscript {
     	}		
 	}
 	dependencies {  
-		classpath("com.moowork.gradle:gradle-node-plugin:1.1.1")
+		classpath 'com.moowork.gradle:gradle-node-plugin:1.1.1'
 		classpath 'commons-net:commons-net:3.3'
 		classpath 'org.hidetake:gradle-ssh-plugin:2.2.0'
 	}	

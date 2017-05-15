@@ -82,36 +82,33 @@
                     label: "ID",
                     value: "id"
                 }, {
-                    label: "이름",
-                    value: "name"
-                }, {
-                    label: "접속",
+                    label: "상태",
                     value: "active",
                     width: 60
                 }, {
-                    label: "구분",
+                    label: "위치",
                     value: "type_label"
                 }, {
-                    label: "부서",
+                    label: "MAC",
                     value: "dept_name"
                 }, {
-                    label: "권한",
+                    label: "IP",
                     value: "level"
                 }, {
-                    label: "상태",
+                    label: "PORT",
                     value: "status_label",
                     width: 60
                 }, {
-                    label: "NAS",
+                    label: "CPU",
                     value: "nas"
                 }, {
-                    label: "MAC",
+                    label: "온도",
                     value: "mac"
                 }, {
-                    label: "IP",
+                    label: "버전",
                     value: "ip"
                 }, {
-                    label: "최근접속시간",
+                    label: "등록시간",
                     value: "last_login_time"
                 }];
             },
@@ -170,7 +167,7 @@
             },
             filterData() {
                 var filter = this.$.filter_txt.value;
-                this.$.admin_grid.items = _.filter(this.grid_data, function(item) {
+                this.$.grid.items = _.filter(this.grid_data, function(item) {
                     if(item.id == filter || filter == "") {
                         return true;
                     } else {
@@ -196,12 +193,14 @@
             },
             popupUserSetting() {},
             deleteUser() {
-                var items = this.$.admin_grid.selection.selected();
+                var items = this.$.grid_panel.getGrid().selection.selected();
                 if(items.length == 0) {
                     app.showAlert("알림", "선택된 항목이 없네요.");
                     return;
                 }
-                //var value = this.$.admin_grid.items[idx].id;
+                var idx = items[0];
+                var value = this.$.grid_panel.getGrid().items[idx].name;
+                log.info(value);
             },
             paging(event) {
                 this.loadData();

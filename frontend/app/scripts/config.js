@@ -7,7 +7,7 @@ class Config {
         this.ajax_url = "http://localhost:9000/api/";
         this.ajax_timeout = 50000;
         this.ajax_after_delay = 0.5;
-        this.init_view_id = "test-view";
+        this.init_view_id = "user-view";
         //this.configPace();
         this.configAjax();
         this.configRoute();

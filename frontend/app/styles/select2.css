@@ -3,6 +3,10 @@
     text-align: center !important;
 }
 
+.select2-selection {
+    height: 30px !important;
+}
+
 .select2-selection--single {
     border: 1px solid;
     border-color: #dedede !important;
