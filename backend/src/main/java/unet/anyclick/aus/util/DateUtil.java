@@ -18,6 +18,7 @@ public class DateUtil {
 
 	static SimpleDateFormat time_sdf = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
 	static SimpleDateFormat date_sdf = new SimpleDateFormat("yy-MM-dd");
+	static SimpleDateFormat time_only_sdf = new SimpleDateFormat("HH:mm:ss");
 
 	public static Map<String, String> getTodayTime() {
 		String date = date_sdf.format(new Date(System.currentTimeMillis()));
@@ -57,6 +58,19 @@ public class DateUtil {
 		String result = "-";
 		try {
 			result = date_sdf.format(date_sdf.parse(time));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static String trimTime(String time) {
+		if (time == null) {
+			return "-";
+		}
+		String result = "-";
+		try {
+			result = time.substring(11, 19);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

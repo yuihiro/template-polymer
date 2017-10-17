@@ -121,6 +121,8 @@
                 this.busy = false;
             },
             login() {
+            	app.start();
+            	return;
                 this.busy = true;
                 var me = this;
                 var id = CryptoUtil.encrypt(this.$.id.value);

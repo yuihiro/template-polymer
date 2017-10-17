@@ -25,8 +25,8 @@ public class AccessLogMapper implements RowMapper {
 		vo.put("user_ip", rs.getString("FramedIPAddress"));
 		vo.put("input", rs.getString("AcctInputOctets"));
 		vo.put("output", rs.getString("AcctOutputOctets"));
-		vo.put("login_time", DateUtil.trimDateTime(rs.getString("AcctStartTime")));
-		vo.put("logout_time", DateUtil.trimDateTime(rs.getString("AcctStopTime")));
+		vo.put("login_time", DateUtil.trimTime(rs.getString("AcctStartTime")));
+		vo.put("logout_time", DateUtil.trimTime(rs.getString("AcctStopTime")));
 		vo.put("time_gap", DateUtil.secondToTime(rs.getLong("time_gap")));
 		return vo;
 	}

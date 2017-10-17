@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import unet.anyclick.aus.repository.mapper.AuthLogMapper;
 import unet.anyclick.aus.util.QueryUtil;
 
-@SuppressWarnings("unchecked")
 @Repository
 public class AuthLogRepository {
 
